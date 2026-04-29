@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_mostakhlas" model="ir.actions.report">
+        <field name="name">Mostakhlas</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">arka_purchase_mostakhlas.report_mostakhlas</field>
+        <field name="report_file">arka_purchase_mostakhlas.report_mostakhlas</field>
+        <field name="print_report_name">'Mostakhlas - %s' % (object.sequence)</field>
+    </record>
+
+    <template id="report_mostakhlas">
+        <t t-name="arka_purchase_mostakhlas.report_mostakhlas">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="o">
+
+                        <div style="direction:rtl; padding:0 2px; font-family:Tahoma,Arial,sans-serif; font-size:11px;">
+
+                            <!-- ══════════════ TITLE ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:2px solid #2c3e50;">
+                                <tr>
+                                    <td rowspan="2" style="width:18%; text-align:center; vertical-align:middle; padding:8px; border:1px solid #2c3e50;">
+                                        <img t-if="o.company_id.logo"
+                                             t-att-src="'data:image/png;base64,%s' % o.company_id.logo.decode()"
+                                             style="max-height:70px;"/>
+                                    </td>
+                                    <td style="width:64%; text-align:center; vertical-align:middle; padding:10px; background-color:#2c3e50; color:#ffffff; font-size:20px; font-weight:bold; letter-spacing:2px; border:1px solid #2c3e50;">
+                                        مستخلص أعمال
+                                    </td>
+                                    <td rowspan="2" style="width:18%; text-align:center; vertical-align:middle; padding:8px; background-color:#f39c12; border:1px solid #2c3e50;">
+                                        <div style="font-size:10px; font-weight:bold; color:#2c3e50;">رقم المستخلص</div>
+                                        <div style="font-size:18px; font-weight:bold; color:#2c3e50; margin-top:4px;">
+                                            <t t-esc="o.sequence"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; padding:4px; background-color:#34495e; color:#bdc3c7; font-size:10px; border:1px solid #2c3e50;">
+                                        <t t-esc="o.company_id.name"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ بيانات المستخلص ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50;">
+                                <tr>
+                                    <td colspan="4" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        بيانات المستخلص
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:20%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        تاريخ المستخلص
+                                    </td>
+                                    <td style="width:30%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.date_mostakhlas"/>
+                                    </td>
+                                    <td style="width:20%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        نوع المستخلص
+                                    </td>
+                                    <td style="width:30%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.mostakhlas_line_ids[:1].mostakhlas_type_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        رقم المستخلص
+                                    </td>
+                                    <td colspan="3" style="text-align:center; padding:7px; border:1px solid #bdc3c7; color:#2c3e50; font-weight:bold;">
+                                        <t t-esc="o.sequence"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ بيانات المشروع ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50;">
+                                <tr>
+                                    <td colspan="4" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        بيانات المشروع
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:20%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        اسم المشروع
+                                    </td>
+                                    <td style="width:30%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.project_id.name"/>
+                                    </td>
+                                    <td style="width:20%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        مكان المشروع
+                                    </td>
+                                    <td style="width:30%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.project_id.name"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ بيانات التعاقد ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50;">
+                                <tr>
+                                    <td colspan="4" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        بيانات التعاقد
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:20%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        اسم المقاول
+                                    </td>
+                                    <td style="width:30%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.partner_id.name"/>
+                                    </td>
+                                    <td style="width:20%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        رقم العقد
+                                    </td>
+                                    <td style="width:30%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.partner_ref"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        تاريخ التعاقد
+                                    </td>
+                                    <td colspan="3" style="text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.create_date"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ بنود الأعمال ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50; table-layout:fixed;">
+                                <tr>
+                                    <td colspan="10" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        بنود الأعمال
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="width:5%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">م</th>
+                                    <th style="width:20%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">بيان الأعمال</th>
+                                    <th style="width:7%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">الوحدة</th>
+                                    <th style="width:9%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">كمية العقد</th>
+                                    <th style="width:9%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">الفئة</th>
+                                    <th style="width:11%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">الإجمالي</th>
+                                    <th style="width:10%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">% سابقة</th>
+                                    <th style="width:10%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">% حالية</th>
+                                    <th style="width:12%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">القيمة</th>
+                                    <th style="width:7%; background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:9px; border:1px solid #2c3e50;">ملاحظات</th>
+                                </tr>
+
+                                <t t-set="buffer"
+                                   t-value="env['mostakhlas.print.buffer'].search([('order_id', '=', o.id)])"/>
+
+                                <t t-foreach="buffer" t-as="b">
+                                    <t t-set="l" t-value="b.line_id"/>
+                                    <tr>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px;">
+                                            <t t-esc="l.sequence_int"/>
+                                        </td>
+                                        <td style="text-align:right; padding:5px; border:1px solid #bdc3c7; font-size:10px;">
+                                            <t t-esc="l.product_id.display_name"/>
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px;">
+                                            <t t-esc="l.product_uom.name"/>
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px;">
+                                            <t t-esc="l.product_qty"/>
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px;">
+                                            <t t-esc="l.price_unit"/>
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px;">
+                                            <t t-esc="l.product_qty * l.price_unit"/>
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px; color:#e67e22; font-weight:bold;">
+                                            <t t-esc="l.previous_progress"/>%
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:10px; color:#27ae60; font-weight:bold;">
+                                            <t t-esc="l.progress_percent"/>%
+                                        </td>
+                                        <td style="text-align:center; padding:5px; border:1px solid #bdc3c7; font-size:11px; font-weight:bold; color:#2c3e50;">
+                                            <t t-esc="l.product_qty * l.price_unit * (l.done_progress / 100)"/>
+                                        </td>
+                                        <td style="text-align:right; padding:5px; border:1px solid #bdc3c7; font-size:9px; color:#777;">
+                                            <t t-esc="l.name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+
+                            <!-- ══════════════ الإجماليات ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50;">
+                                <tr>
+                                    <td colspan="2" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        الإجماليات
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:70%; background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:8px; font-size:11px; border:1px solid #2c3e50;">
+                                        إجمالي قيمة الأعمال التعاقدية المنفذة
+                                    </td>
+                                    <td style="width:30%; background-color:#ebedef; text-align:center; padding:8px; font-weight:bold; color:#2c3e50; font-size:13px; border:1px solid #bdc3c7;">
+                                        <t t-esc="o.executed_contract_value"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#34495e; color:#ffffff; font-weight:bold; text-align:center; padding:8px; font-size:11px; border:1px solid #2c3e50;">
+                                        إجمالي الأعمال المنفذة شامل ضريبة القيمة المضافة
+                                    </td>
+                                    <td style="background-color:#ebedef; text-align:center; padding:8px; font-weight:bold; color:#2c3e50; font-size:13px; border:1px solid #bdc3c7;">
+                                        <t t-esc="o.executed_contract_value_vat"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#fdecea; font-weight:bold; text-align:center; padding:8px; color:#c0392b; font-size:11px; border:1px solid #bdc3c7;">
+                                        (-) خصم دفعة توريد
+                                    </td>
+                                    <td style="background-color:#fdecea; text-align:center; padding:8px; font-weight:bold; color:#c0392b; font-size:13px; border:1px solid #bdc3c7;">
+                                        <t t-esc="o.vendor_payment_total_all"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ المستحق صرفه ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:2px solid #f39c12;">
+                                <tr>
+                                    <td style="width:70%; background-color:#f39c12; color:#ffffff; font-weight:bold; text-align:center; padding:10px; font-size:14px; border:1px solid #f39c12;">
+                                        المستحق صرفه
+                                    </td>
+                                    <td style="width:30%; background-color:#fef9e7; text-align:center; padding:10px; font-weight:bold; color:#2c3e50; font-size:16px; border:2px solid #f39c12;">
+                                        <t t-esc="o.executed_contract_value_vat - o.vendor_payment_total_all"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ إقرار مقاول الباطن ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50;">
+                                <tr>
+                                    <td colspan="3" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        إقرار مقاول الباطن
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:18%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        الاسم
+                                    </td>
+                                    <td style="width:72%; text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.subcontractor_name"/>
+                                    </td>
+                                    <td rowspan="3" style="width:10%; background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; writing-mode:vertical-rl; transform:rotate(180deg); font-size:11px; letter-spacing:3px; border:1px solid #2c3e50;">
+                                        خصومات وتعليات
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        التاريخ
+                                    </td>
+                                    <td style="text-align:center; padding:7px; border:1px solid #bdc3c7; color:#333;">
+                                        <t t-esc="o.date_subcontractor"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        التوقيع
+                                    </td>
+                                    <td style="text-align:center; padding:7px; border:1px solid #bdc3c7; height:45px;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="background-color:#ebedef; text-align:center; font-weight:bold; color:#2c3e50; padding:8px; font-size:10px; border:1px solid #bdc3c7;">
+                                        أقر بأن جميع الكميات عاليه صحيحة — يعتمد صحة الكميات المنفذة طبقاً للقياس الهندسي المرفق
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- ══════════════ الاعتمادات ══════════════ -->
+
+                            <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1.5px solid #2c3e50;">
+                                <tr>
+                                    <td colspan="3" style="background-color:#2c3e50; color:#ffffff; font-weight:bold; text-align:center; padding:6px; font-size:12px; border:1px solid #2c3e50;">
+                                        الاعتمادات
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:33%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        مدير المشروع
+                                    </td>
+                                    <td style="width:34%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        إدارة المكتب الفني
+                                    </td>
+                                    <td style="width:33%; background-color:#ebedef; font-weight:bold; color:#2c3e50; text-align:center; padding:7px; border:1px solid #bdc3c7;">
+                                        مدير العمليات
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:10px; height:70px; vertical-align:top; border:1px solid #bdc3c7; line-height:2.2; color:#333;">
+                                        <b style="color:#2c3e50;">الاسم: </b>
+                                        <t t-esc="o.project_manager"/>
+                                        <br/><br/>
+                                        <b style="color:#2c3e50;">التوقيع: </b>
+                                    </td>
+                                    <td style="padding:10px; height:70px; vertical-align:top; border:1px solid #bdc3c7; line-height:2.2; color:#333;">
+                                        <b style="color:#2c3e50;">الاسم: </b>
+                                        <t t-esc="o.technical_office_manager"/>
+                                        <br/><br/>
+                                        <b style="color:#2c3e50;">التوقيع: </b>
+                                    </td>
+                                    <td style="padding:10px; height:70px; vertical-align:top; border:1px solid #bdc3c7; line-height:2.2; color:#333;">
+                                        <b style="color:#2c3e50;">الاسم: </b>
+                                        <t t-esc="o.operations_manager"/>
+                                        <br/><br/>
+                                        <b style="color:#2c3e50;">التوقيع: </b>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_expense_sheet_replace_all"
+              inherit_id="hr_expense.report_expense_sheet">
+
+        <!-- Replace the whole page -->
+        <xpath expr="//t[@t-call='web.external_layout']//div[contains(@class,'page')]"
+               position="replace">
+            <div class="page" style="text-align:center;">
+
+                <!-- ===================== TITLE ===================== -->
+                <h3 style="text-align:center; margin-bottom:20px;">
+                    <strong>
+                        Payment Request :
+                        <span t-esc="o.custom_sequence or ''"/>
+                    </strong>
+                </h3>
+
+                <!-- ===================== REQUEST HEADER ===================== -->
+                <table style="width:100%;
+                              border:1px solid #000;
+                              border-collapse:collapse;
+                              font-size:12px;
+                              margin-bottom:40px;">
+                    <tbody>
+
+                        <tr>
+                            <td style="border:1px solid #000; width:25%; font-weight:bold; background:#f2f2f2;">
+                                Requester Name
+                            </td>
+                            <td style="border:1px solid #000; width:25%;">
+                                <span t-esc="o.employee_id.sudo().name or ''"/>
+                            </td>
+
+                            <td style="border:1px solid #000; width:25%; font-weight:bold; background:#f2f2f2;">
+                                Department
+                            </td>
+                            <td style="border:1px solid #000; width:25%;">
+                                <span t-esc="o.employee_id.sudo().department_id.name or ''"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border:1px solid #000; font-weight:bold; background:#f2f2f2;">
+                                Date
+                            </td>
+                            <td style="border:1px solid #000;">
+                                <span t-field="o.accounting_date"/>
+                            </td>
+
+                            <td style="border:1px solid #000; font-weight:bold; background:#f2f2f2;">
+                                PR Number
+                            </td>
+                            <td style="border:1px solid #000;">
+                                <span t-esc="o.custom_sequence or ''"/>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <!-- ===================== KIND OF PAYMENT ===================== -->
+                <table style="width:100%;
+                              border:1px solid #000;
+                              border-collapse:collapse;
+                              font-size:12px;
+                              margin-bottom:40px;">
+
+                    <thead>
+                        <tr>
+                            <th colspan="4"
+                                style="border-bottom:1px solid #000;
+                                       text-align:center;
+                                       font-weight:bold;
+                                       background:#e6e6e6;
+                                       padding:6px;">
+                                KIND OF PAYMENT / PURPOSE
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <t t-set="kinds" t-value="o.kind_of_payment_id"/>
+                        <t t-set="count" t-value="0"/>
+
+                        <tr style="border-bottom:1px solid #000;">
+                            <t t-foreach="kinds" t-as="kind">
+                                <td style="padding:6px; width:25%;">
+                                    <span style="font-size:14px; margin-right:6px;">☑</span>
+                                    <span t-esc="kind.name"/>
+                                </td>
+
+                                <t t-set="count" t-value="count + 1"/>
+
+                                <t t-if="count % 4 == 0">
+                                    <tr style="border-bottom:1px solid #000;"></tr>
+                                </t>
+                            </t>
+
+                            <t t-if="count % 4 != 0">
+                                <t t-foreach="range(4 - (count % 4))" t-as="i">
+                                    <td style="padding:6px; width:25%;"></td>
+                                </t>
+                            </t>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- ===================== PAYMENT DETAILS ===================== -->
+                <table style="width:100%;
+                              border:1px solid #000;
+                              border-collapse:collapse;
+                              font-size:12px;
+                              margin-bottom:40px;">
+
+                    <thead>
+                        <tr>
+                            <th colspan="4"
+                                style="border:1px solid #000;
+                                       text-align:center;
+                                       font-weight:bold;
+                                       background:#e6e6e6;
+                                       padding:6px;">
+                                Payment Details
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="border:1px solid #000; width:10%; background:#f2f2f2;">S. No.</th>
+                            <th style="border:1px solid #000; width:40%; background:#f2f2f2;">Description</th>
+                            <th style="border:1px solid #000; width:20%; background:#f2f2f2;">Value</th>
+                            <th style="border:1px solid #000; width:15%; background:#f2f2f2;">Project</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <!-- counter -->
+                        <t t-set="i" t-value="0"/>
+
+                        <!-- Expense Lines -->
+                        <t t-foreach="o.expense_line_ids" t-as="line">
+                            <t t-set="i" t-value="i + 1"/>
+
+                            <tr>
+
+                                <td style="border:1px solid #000; text-align:center;">
+                                    <span t-esc="i"/>
+                                </td>
+
+                                <td style="border:1px solid #000; text-align:left; padding:6px;">
+                                    <span t-esc="(line.product_id.name or '')"/>
+                                    <span>-</span>
+                                    <span t-esc="(line.name or '')"/>
+                                </td>
+
+                                <td style="border:1px solid #000; text-align:center;">
+                                    <span t-field="line.total_amount"
+                                          t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
+
+                                <!-- Project Column -->
+                                <td style="border:1px solid #000; text-align:center;">
+                                    <span t-esc="o.project_id.name or ''"/>
+                                </td>
+
+                                <!-- Document (فاضي) -->
+
+                            </tr>
+
+                        </t>
+
+                        <!-- TOTAL ROW -->
+                        <tr>
+                            <td colspan="2"
+                                style="border:1px solid #000;
+                   text-align:center;
+                   font-weight:bold;
+                   background:#e6e6e6;">
+                                TOTAL
+                            </td>
+
+                            <td style="border:1px solid #000; text-align:center; font-weight:bold;">
+                                <span t-field="o.total_amount"
+                                      t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                            </td>
+
+                            <td style="border:1px solid #000;"></td>
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+                <!-- ===================== FINANCE DEPARTMENT ===================== -->
+                <table style="width:100%;
+                              border:1px solid #000;
+                              border-collapse:collapse;
+                              font-size:12px;
+                              margin-top:40px;">
+
+                    <thead>
+                        <tr>
+                            <th colspan="6"
+                                style="border:1px solid #000;
+                                       text-align:center;
+                                       font-weight:bold;
+                                       background:#e6e6e6;
+                                       padding:6px;">
+                                (For Finance Department Use Only)
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td colspan="2"
+                                style="border:1px solid #000; padding:6px; font-weight:bold;">
+                                Payment Method from Finance Dept:
+                            </td>
+                            <td colspan="4" style="border:1px solid #000; padding:6px;">
+                                <span t-esc="dict(o.payment_method_line_id.journal_id._fields['type'].selection).get(o.payment_method_line_id.journal_id.type)"/>
+                                <span style="margin-left:8px;">☑</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th style="border:1px solid #000; background:#f2f2f2;">Official Name / Card</th>
+                            <th colspan="3" style="border:1px solid #000; background:#f2f2f2;">IBAN / Cheque</th>
+                            <th colspan="2" style="border:1px solid #000; background:#f2f2f2;">Bank Name</th>
+                        </tr>
+
+                        <tr>
+                            <td style="border:1px solid #000; padding:6px;">
+                                <span t-esc="o.payment_method_line_id.journal_id.bank_account_id.partner_id.name or ''"/>
+                            </td>
+                            <td colspan="3" style="border:1px solid #000; padding:6px;">
+                                <span t-esc="o.payment_method_line_id.journal_id.bank_account_id.acc_number or ''"/>
+                            </td>
+                            <td colspan="2" style="border:1px solid #000; padding:6px;">
+                                <span t-esc="o.payment_method_line_id.journal_id.bank_account_id.bank_id.name or ''"/>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <!-- ===================== SIGNATURES ===================== -->
+                <table style="width:100%;
+                              border:1px solid #000;
+                              border-collapse:collapse;
+                              font-size:12px;
+                              margin-top:25px;
+                              text-align:center;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid #000; background:#e6e6e6; padding:8px;">
+                                Requester<br/>Signature
+                            </th>
+                            <th style="border:1px solid #000; background:#e6e6e6; padding:8px;">
+                                Purchase Manager
+                            </th>
+                            <th style="border:1px solid #000; background:#e6e6e6; padding:8px;">
+                                Accounting Approval
+                            </th>
+                            <th style="border:1px solid #000; background:#e6e6e6; padding:8px;">
+                                C.E.O<br/>Approval
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="height:70px;">
+                            <td style="border:1px solid #000;"></td>
+                            <td style="border:1px solid #000;"></td>
+                            <td style="border:1px solid #000;"></td>
+                            <td style="border:1px solid #000;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </xpath>
+
+    </template>
+
+</odoo>

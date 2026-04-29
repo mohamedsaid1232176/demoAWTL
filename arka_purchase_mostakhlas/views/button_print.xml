@@ -1,0 +1,22 @@
+<odoo>
+    <record id="purchase_order_form_inherit_mostakhlas_print" model="ir.ui.view">
+        <field name="name">purchase.order.form.mostakhlas.print</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- زرار طباعة المستخلص -->
+            <xpath expr="//header" position="inside">
+                <button name="action_open_mostakhlas_wizard"
+                        string="Print mostakhlas"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not show_mostakhlas_tab"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

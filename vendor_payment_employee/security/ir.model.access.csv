@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kind_of_payment_user,access.kind.of.payment.user,model_kind_of_payment,,1,1,1,1

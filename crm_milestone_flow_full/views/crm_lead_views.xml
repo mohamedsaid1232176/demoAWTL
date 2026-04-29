@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit CRM Lead Form to add Milestone Groups Tab -->
+        <record id="view_crm_lead_milestone_groups_tab" model="ir.ui.view">
+            <field name="name">crm.lead.milestone.groups.tab</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+
+                <!-- أضف Tab جديدة داخل الـ notebook -->
+                <xpath expr="//sheet/notebook" position="inside">
+
+                    <page string="Milestone Groups" name="milestone_groups_tab"
+                          invisible="not (show_milestone_tab and is_arka_company)">
+
+
+                        <div class="milestone-box">
+
+                            <!-- عنوان فوق الجدول -->
+                            <div class="milestone-box-header">
+                                <h3>Milestone Groups</h3>
+                            </div>
+
+                            <!-- جدول الجروبات -->
+                            <field name="milestone_group_ids" nolabel="1">
+                                <list>
+                                    <field name="milestone_id"/>
+
+                                    <field name="quantity"
+                                           sum="Total Qty"/>
+
+                                    <field name="total_goods_unit_price"
+                                           sum="Total Goods Price"/>
+
+                                    <field name="total_service_unit_price"
+                                           sum="Total Services Price"/>
+                                    <field name="total_cost" string="Total Cost"
+                                           sum="Total cost project"/>
+                                    <field name="total_sale_milestone" readonly="1" string="Total Sale (Milestone)"/>
+
+
+                                </list>
+
+
+                                <form string="Milestone Group">
+
+
+                                    <group>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+
+
+                                            <!-- ░░░ الزرار في أقصى الشمال ░░░ -->
+                                            <div invisible="1">
+                                                <button name="action_to_technical"
+                                                        string="الانتقال إلى المكتب الفني"
+                                                        type="object"
+                                                        class="btn-primary"
+                                                        invisible="stage == 'technical'"/>
+
+                                                <button name="action_to_project"
+                                                        string="الانتقال إلى إدارة المشروع"
+                                                        type="object"
+
+                                                        class="btn-green"
+                                                        invisible="stage == 'project'"/>
+                                            </div>
+
+
+                                            <!-- ░░░ الـ Stage Statusbar في أقصى اليمين ░░░ -->
+                                            <div style="min-width: 250px; text-align: right;">
+                                                <field name="stage"
+                                                       widget="statusbar"
+                                                       statusbar_visible="technical,project"
+                                                       statusbar_colors="technical:purple;project:orange"/>
+                                            </div>
+
+                                        </div>
+                                    </group>
+
+
+                                    <group>
+
+                                        <field name="milestone_id"/>
+                                        <field name="quantity" placeholder="Qty" style="min-width:100px;"/>
+                                        <field name="planned_date_from" invisible="1"/>
+                                        <field name="planned_date_to" invisible="1"/>
+
+                                        <field name="planned_date_from"
+                                               widget="daterange"
+                                               options="{'end_date_field': 'planned_date_to'}"/>
+
+                                        <div class="button-row">
+                                            <button name="action_open_goods_popup" type="object"
+                                                    string="📦 Add Goods" class="btn-primary cool-btn"/>
+
+                                        </div>
+                                    </group>
+
+                                    <!-- GOODS -->
+                                    <h5 style="color: #b8860b; font-weight: bold; direction: rtl; text-align: center;">
+                                        ⚠️ تنبيه: يُرجى إدخال الـقيم في جموع الحقول بعد حفظ الـ Milestone أولًا،
+                                        لأن القيم لن تُحتسب بشكل صحيح قبل عمل Save.
+                                    </h5>
+
+
+                                    <group>
+
+                                        <div class="table-block">
+                                            <h4>📦 Goods</h4>
+                                            <field name="goods_line_ids">
+                                                <list editable="bottom" create="false">
+                                                    <field name="product_id"/>
+                                                    <field name="type"/>
+                                                    <field name="manual_product_cost"/>
+                                                    <field name="manual_product_sale_price"
+                                                           invisible="1"/>
+                                                    <!--          /\  current_stage == 'technical'-->
+
+                                                    <field name="qty"/>
+                                                    <field name="margin"
+                                                           invisible="current_stage == 'technical'"/>
+                                                    <field name="unit_price"
+                                                           invisible="current_stage == 'technical'"/>
+                                                </list>
+                                            </field>
+
+
+                                            <h3>Goods Totals</h3>
+
+                                            <div class="o_form_label o_td_label"
+                                                 style="padding:12px; border:1px solid #d9d9d9; border-radius:6px; margin-bottom:15px; background:#fafafa;">
+                                                <group col="3">
+                                                    <field name="total_goods_cost" readonly="1" string="Total Cost"/>
+                                                    <field name="total_goods_unit_price" readonly="1"
+                                                           string="Total Unit Price"/>
+                                                    <field name="total_goods_sale"  string="Total Sale"/>
+
+                                                </group>
+                                            </div>
+
+                                        </div>
+                                    </group>
+
+                                    <!-- SERVICES -->
+
+                                    <group>
+                                        <div class="button-row">
+
+
+                                            <button name="action_open_services_popup" type="object"
+                                                    string="🛠 Add Services" class="btn-secondary cool-btn"/>
+                                        </div>
+                                    </group>
+                                    <group>
+
+                                        <div class="table-block">
+                                            <h4>🛠 Services</h4>
+                                            <field name="service_line_ids">
+                                                <list editable="bottom" create="false">
+                                                    <field name="product_id"/>
+                                                    <field name="type"/>
+                                                    <field name="manual_product_cost"/>
+                                                    <field name="manual_product_sale_price"
+                                                           invisible="current_stage == 'technical'"/>
+                                                    <field name="qty"/>
+                                                    <field name="margin"
+                                                           invisible="current_stage == 'technical'"/>
+                                                    <field name="unit_price"
+                                                           invisible="current_stage == 'technical'"/>
+                                                </list>
+                                            </field>
+                                            <h3>Services Totals</h3>
+
+                                            <div class="o_form_label o_td_label"
+                                                 style="padding:12px; border:1px solid #d9d9d9; border-radius:6px; margin-bottom:15px; background:#fafafa;">
+                                                <group col="3">
+                                                    <field name="total_service_cost" readonly="1" string="Total Cost"/>
+                                                    <field name="total_service_unit_price" readonly="1"
+                                                           string="Total Unit Price"/>
+                                                    <field name="total_service_sale" readonly="1" string="Total Sale"/>
+                                                </group>
+                                            </div>
+
+                                        </div>
+
+
+                                    </group>
+
+                                </form>
+                            </field>
+
+                            <!-- Footer تحت الجدول -->
+                            <div class="milestone-footer">
+                                <span>✔ Manage your milestone groups efficiently</span>
+                            </div>
+
+
+                        </div>
+
+                        <!-- TOTALS BLOCK تحت الجدول -->
+                        <!-- TOTALS BLOCK تحت الجدول -->
+                        <div class="o_td_label"
+                             style="margin-top:20px; padding:20px; border-radius:12px;
+            border: 1px solid #d0d0d0; background:#ffffff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+
+                            <!-- العنوان -->
+                            <h3 style="
+                                text-align:center;
+
+                                font-weight:700;
+                                font-size:20px;
+                                margin-bottom:20px;
+                                padding:8px 0;
+                                color:#27ae60; /* أخضر راقي */
+                                text-transform:uppercase;
+                                letter-spacing:2px;
+                                border-bottom:2px solid #27ae60;
+                            ">
+                                TOTAL Cost And Unit Price For Project
+                            </h3>
+
+                            <!-- القيم -->
+                            <group col="2">
+
+                                <field name="total_cost_project"
+                                       readonly="1"
+                                       string="Total Project Cost"
+                                       class="oe_inline"
+                                       style="font-size:20px;
+                      font-weight:800;
+                      color:#2ecc71;         /* أخضر جميل */
+                      padding:8px 0;"/>
+
+                                <field name="total_unit_price_project"
+                                       readonly="1"
+                                       invisible="not show_unit_price_field"
+                                       string="Total Project Unit Price"
+                                       class="oe_inline"
+                                       style="font-size:20px;
+                      font-weight:800;
+                      color:#2ecc71;         /* أخضر جميل */
+                      padding:8px 0;"/>
+
+
+                            </group>
+
+                        </div>
+
+
+                    </page>
+
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

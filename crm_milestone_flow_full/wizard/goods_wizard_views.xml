@@ -1,0 +1,34 @@
+<odoo>
+    <record id="view_goods_selector_form" model="ir.ui.view">
+        <field name="name">goods.selector.form</field>
+        <field name="model">wizard.goods.selector</field>
+        <field name="arch" type="xml">
+            <form string="Select Goods">
+                <group>
+                    <field name="product_ids"
+                           widget="many2many_list"
+                           domain="[
+            ('product_tmpl_id.milestone_ids','in',[milestone_id]),
+            ('product_tmpl_id.type','=','consu')
+       ]"
+                    >
+                        <list editable="bottom" string="Goods">
+                            <field name="default_code"/>
+                            <field name="name"/>
+                            <field name="list_price"/>
+                            <field name="standard_price"/>
+                            <field name="qty_available"/>
+                            <field name="virtual_available"/>
+                        </list>
+                    </field>
+
+                </group>
+
+                <footer>
+                    <button name="action_add_goods" string="Add" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

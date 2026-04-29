@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_journal_entry">
+        <t t-call="web.external_layout">
+
+            <t t-foreach="docs" t-as="o">
+                <main style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#243447;">
+
+                    <!-- ================================================= -->
+                    <!-- HEADER – CLEAN DASHBOARD STYLE -->
+                    <!-- ================================================= -->
+                    <div style="
+    background:#243447;
+    color:white;
+    padding:22px;
+    border-radius:12px;
+    margin-bottom:24px;
+">
+
+                        <!-- Title -->
+                        <div style="
+        font-size:24px;
+        font-weight:700;
+        letter-spacing:1px;
+        margin-bottom:10px;
+    ">
+                            Journal Entry
+                        </div>
+
+                        <!-- Sub Info Row -->
+                        <div style="
+        font-size:14px;
+        margin-bottom:14px;
+    ">
+                            <span>
+                                Entry No:
+                                <strong>
+                                    <span t-field="o.name"/>
+                                </strong>
+                            </span>
+
+                            <span style="margin:0 10px;">•</span>
+
+                            <span>
+                                Date:
+                                <span t-field="o.date"/>
+                            </span>
+                        </div>
+
+                        <!-- Info Box -->
+                        <div style="
+        background:rgba(255,255,255,0.08);
+        padding:12px 14px;
+        border-radius:10px;
+    ">
+
+                            <div style="font-size:12px; margin-bottom:6px;">
+                                <strong>Journal:</strong>
+                                <span t-field="o.journal_id.name"/>
+                            </div>
+
+                            <!-- Status -->
+                            <div>
+                                <span t-if="o.state == 'posted'"
+                                      style="
+                    display:inline-block;
+                    padding:6px 18px;
+                    background:#1F8F5F;
+                    border-radius:20px;
+                    font-size:11px;
+                    font-weight:bold;
+                    letter-spacing:0.5px;
+                  ">
+                                    POSTED
+                                </span>
+
+                                <span t-if="o.state != 'posted'"
+                                      style="
+                    display:inline-block;
+                    padding:6px 18px;
+                    background:#F4B400;
+                    color:#000;
+                    border-radius:20px;
+                    font-size:11px;
+                    font-weight:bold;
+                    letter-spacing:0.5px;
+                  ">
+                                    DRAFT
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ================================================= -->
+                    <!-- KPI CARDS -->
+                    <!-- ================================================= -->
+                    <table style="width:100%; border-collapse:separate; border-spacing:12px; margin-bottom:20px;">
+                        <tr>
+
+                            <td style="width:25%; background:#EAF0F6; padding:14px; border-radius:10px;">
+                                <div style="font-size:11px; color:#555;">TOTAL DEBIT</div>
+                                <div style="font-size:18px; font-weight:bold; color:#1F8F5F;">
+                                    <span t-esc="sum(o.line_ids.mapped('debit'))"/>
+                                </div>
+                            </td>
+
+                            <td style="width:25%; background:#EAF0F6; padding:14px; border-radius:10px;">
+                                <div style="font-size:11px; color:#555;">TOTAL CREDIT</div>
+                                <div style="font-size:18px; font-weight:bold; color:#C0392B;">
+                                    <span t-esc="sum(o.line_ids.mapped('credit'))"/>
+                                </div>
+                            </td>
+
+                            <td style="width:25%; background:#EAF0F6; padding:14px; border-radius:10px;">
+                                <div style="font-size:11px; color:#555;">LINES COUNT</div>
+                                <div style="font-size:18px; font-weight:bold;">
+                                    <span t-esc="len(o.line_ids)"/>
+                                </div>
+                            </td>
+
+                            <td style="width:25%; background:#EAF0F6; padding:14px; border-radius:10px;">
+                                <div style="font-size:11px; color:#555;">BALANCED</div>
+                                <div style="font-size:16px; font-weight:bold; color:#1F8F5F;">
+                                    ✔ YES
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+
+                    <!-- ================================================= -->
+                    <!-- LINES TABLE -->
+                    <!-- ================================================= -->
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:18px;">
+                        <thead>
+                            <tr style="background:#243447; color:white;">
+                                <th style="padding:10px; text-align:left;">Account</th>
+                                <th style="padding:10px; text-align:left;">Partner</th>
+                                <th style="padding:10px; text-align:left;">Label</th>
+                                <th style="padding:10px; text-align:left;">Analytic</th>
+                                <th style="padding:10px; text-align:right;">Debit</th>
+                                <th style="padding:10px; text-align:right;">Credit</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr t-foreach="o.line_ids" t-as="line"
+                                style="border-bottom:1px solid #e0e0e0;">
+
+                                <!-- Account -->
+                                <td style="padding:8px;">
+                                    <span t-field="line.account_id.name"/>
+                                </td>
+
+                                <!-- Partner -->
+                                <td style="padding:8px;">
+                                    <t t-if="line.partner_id">
+                                        <span t-field="line.partner_id.name"/>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+
+                                <!-- Label -->
+                                <td style="padding:8px;">
+                                    <span t-field="line.name"/>
+                                </td>
+
+                                <!-- Analytic Distribution -->
+                                <td style="padding:8px; font-size:11px; color:#555;">
+                                    <t t-if="line.analytic_distribution">
+                                        <t t-foreach="line.analytic_distribution.items()" t-as="ad">
+
+                                            <t t-set="analytic_ids" t-value="ad[0].split(',')"/>
+
+                                            <t t-foreach="analytic_ids" t-as="aid">
+                                                <div>
+                                                    <span t-esc="env['account.analytic.account'].browse(int(aid)).name"/>
+                                                    :
+                                                    <strong>
+                                                        <span t-esc="ad[1]"/>%
+                                                    </strong>
+                                                </div>
+                                            </t>
+
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        -
+                                    </t>
+                                </td>
+
+                                <!-- Debit -->
+                                <td style="padding:8px; text-align:right; color:#1F8F5F; font-weight:bold;">
+                                    <span t-field="line.debit"/>
+                                </td>
+
+                                <!-- Credit -->
+                                <td style="padding:8px; text-align:right; color:#C0392B; font-weight:bold;">
+                                    <span t-field="line.credit"/>
+                                </td>
+
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                    <!-- ================================================= -->
+                    <!-- GRAND TOTAL -->
+                    <!-- ================================================= -->
+                    <div style="
+                        background:#243447;
+                        color:white;
+                        padding:14px;
+                        text-align:center;
+                        border-radius:8px;
+                        font-size:16px;
+                        font-weight:bold;
+                        margin-bottom:15px;
+                    ">
+                        TOTAL AMOUNT :
+                        <span t-esc="sum(o.line_ids.mapped('debit'))"/>
+                    </div>
+
+
+                </main>
+            </t>
+
+        </t>
+    </template>
+
+</odoo>

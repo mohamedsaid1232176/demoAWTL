@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="crm_lead_reminder_cron" model="ir.cron">
+        <field name="name">CRM Project End Reminder</field>
+
+        <!-- المستخدم -->
+        <field name="user_id" ref="base.user_admin"/>
+
+        <!-- الموديل -->
+        <field name="model_id" ref="crm.model_crm_lead"/>
+
+        <!-- تنفيذ كود مباشرة -->
+        <field name="state">code</field>
+        <field name="code">model._send_project_manager_activity()</field>
+
+        <!-- التكرار -->
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+
+        <!-- تاريخ أول تشغيل -->
+        <field name="nextcall">2025-01-01 00:00:00</field>
+
+        <field name="active">True</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_milestone_groups_tab_inherit_button" model="ir.ui.view">
+        <field name="name">crm.lead.milestone.groups.tab.button</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='milestone_groups_tab']" position="inside">
+
+                <!-- ============================= -->
+                <!--   Final Product Mode CARD     -->
+                <!-- ============================= -->
+                <div style="
+                    margin-top:20px;
+                    padding:20px;
+                    border-radius:10px;
+                    border:1px solid #dcdcdc;
+                    background:#fdfdfd;
+                    box-shadow:0 1px 4px rgba(0,0,0,0.05);
+                ">
+
+                    <h3 style="
+                        margin-bottom:10px;
+                        font-size:18px;
+                        font-weight:600;
+                        color:#333;
+                        border-left:4px solid #4CAF50;
+                        padding-left:10px;
+                    ">
+                        Final Product Options
+                    </h3>
+
+                    <group string="Final Product Mode" col="2"
+                           style="margin-top:10px;">
+                        <field name="final_product"/>
+                        <field name="final_product_id" invisible=" not final_product"/>
+                    </group>
+
+                </div>
+
+                <!-- ============================= -->
+                <!--          BUTTONS             -->
+                <!-- ============================= -->
+                <div style="
+                    margin-top:20px;
+                    display:flex;
+                    gap:15px;
+                ">
+
+                    <!-- زر Final Product -->
+                    <button name="action_generate_final_product_quotation"
+                            string="Generate Final Product Quotation"
+                            type="object"
+                            class="btn btn-success"
+                            style="
+                                padding:10px 18px;
+                                font-size:15px;
+                                border-radius:8px;
+                            "
+                            invisible="not final_product"
+                    />
+
+                    <!-- زر Milestone -->
+                    <button name="action_generate_milestone_quotation"
+                            type="object"
+                            string="Generate Milestone Quotation"
+                            class="btn btn-primary oe_highlight"
+                            style="
+                                padding:10px 18px;
+                                font-size:15px;
+                                border-radius:8px;
+                            "
+                            invisible="final_product"
+                    />
+
+                </div>
+
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_project_milestone_form_inherit_crm_link" model="ir.ui.view">
+        <field name="name">project.milestone.form.crm.link</field>
+        <field name="model">project.milestone</field>
+
+        <!-- الـ view الصحيح الذي يجب أن نعمل inherit منه -->
+        <field name="inherit_id" ref="project.project_milestone_view_form"/>
+
+        <field name="arch" type="xml">
+
+            <!-- نعمل targeting للـ sheet مباشرة -->
+            <xpath expr="//sheet" position="inside">
+
+                <!-- group جديد نضيف فيه الحقل -->
+                <group string="CRM Link">
+                    <field name="x_sale_line_id"/>
+                </group>
+
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

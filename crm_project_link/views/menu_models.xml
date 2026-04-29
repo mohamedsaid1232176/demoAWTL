@@ -1,0 +1,33 @@
+<odoo>
+
+    <!-- Actions -->
+    <record id="action_event_type" model="ir.actions.act_window">
+        <field name="name">Event Types</field>
+        <field name="res_model">event.type</field>
+        <field name="view_mode">kanban,form</field>
+    </record>
+
+    <record id="action_gift_type" model="ir.actions.act_window">
+        <field name="name">Gift Types</field>
+        <field name="res_model">gift.type</field>
+        <field name="view_mode">kanban,form</field>
+    </record>
+
+    <!-- Main menu under CRM -->
+    <menuitem id="menu_important_info"
+              name="Important Info"
+              parent="crm.crm_menu_root"
+              sequence="90"/>
+
+    <!-- Submenus -->
+    <menuitem id="menu_event_type"
+              name="Event Types"
+              parent="menu_important_info"
+              action="action_event_type"/>
+
+    <menuitem id="menu_gift_type"
+              name="Gift Types"
+              parent="menu_important_info"
+              action="action_gift_type"/>
+
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit_partner_roles" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.partner.roles</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='category_id']" position="after">
+
+                <field name="partner_ref" readonly="1"/>
+
+               <field name="partner_role" widget="radio"/>
+                <field name="employee_type" invisible="partner_role != 'employee'"/>
+
+            </xpath>
+            <!-- <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath> -->
+
+            <!-- <xpath expr="//div[@class='oe_title mb24']/h1" position="after">
+                <div class="mt8">
+                    <field name="contact_name" placeholder="Enter Contact Name"/>
+                </div>
+            </xpath> -->
+
+        </field>
+    </record>
+</odoo>

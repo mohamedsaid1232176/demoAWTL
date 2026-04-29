@@ -1,0 +1,32 @@
+<odoo>
+    <record id="sale_order_hide_each_tab" model="ir.ui.view">
+        <field name="name">sale.order.hide.each.tab</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Order Lines -->
+            <xpath expr="//page[@name='order_lines']" position="attributes">
+                <attribute name="invisible">not show_tabs_user</attribute>
+            </xpath>
+
+            <!-- Optional Products -->
+            <xpath expr="//page[@name='optional_products']" position="attributes">
+                <attribute name="invisible"> not show_tabs_user</attribute>
+            </xpath>
+
+            <!-- Other Info -->
+            <xpath expr="//page[@name='other_information']" position="attributes">
+                <attribute name="invisible"> not show_tabs_user</attribute>
+            </xpath>
+
+            <!-- Customer Signature -->
+            <xpath expr="//page[@name='customer_signature']" position="attributes">
+                <attribute name="invisible"> not show_tabs_user</attribute>
+            </xpath>
+
+
+
+        </field>
+    </record>
+</odoo>

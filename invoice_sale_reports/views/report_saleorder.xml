@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sale_order_layout_w_header">
+        <div style="display: table; width: 100%; margin: 20px 0 30px 0; font-family: Arial, sans-serif;">
+            <div style="display: table-row;">
+                <div style="display: table-cell; width: 42%; vertical-align: top; padding-right: 15px;">
+                    <strong style="font-size: 15pt;color: #062458;">شركة بلس بلد المحدودة</strong><br/>
+                    6071, King Abdulaziz road, 12445, الرياض، المملكة العربية السعودية<br/>
+                    info@plusgroup.sa.com<br/>
+                    VAT number 311359430700003<br/>
+                    CR number 1010248706
+                </div>
+
+                <div class="col-2 text-center">
+                    <img t-if="env.company.logo" t-att-src="image_data_uri(env.company.logo)" 
+                         style="max-height: 150px; max-width: 300px; object-fit: contain;"/>
+                </div>
+
+                <div style="display: table-cell; width: 42%; text-align: right; vertical-align: top; padding-left: 15px;">
+                    <strong style="font-size: 15pt;color: #062458;">شركة بلس بلد المحدودة</strong><br/>
+                    Kingdom of Saudi Arabia - Riyadh 12445<br/>
+                    info@plusgroup.sa.com<br/>
+                    VAT number 311359430700003<br/>
+                    CR number 1010248706
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="custom_external_layout" inherit_id="web.external_layout_standard" priority="99">
+        <xpath expr="//div[contains(@t-attf-class, 'header o_company_')]" position="replace">
+            <div t-attf-class="header o_company_#{company.id}_layout">
+                <t t-call="invoice_sale_reports.sale_order_layout_w_header"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_saleorder_document_custom" 
+              inherit_id="sale.report_saleorder_document" 
+              priority="100">
+
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+
+            <t t-call="web.external_layout">
+
+                <t t-foreach="docs" t-as="doc">
+                    <t t-set="o" t-value="doc"/>
+
+                    <div class="page" style="font-family: Arial, 'DejaVu Sans', sans-serif; font-size: 11pt; line-height: 1.6;">
+
+                        <!-- <t t-call="invoice_sale_reports.sale_order_layout_w_header"/> -->
+
+                        <hr style="border: 1.5px solid #6c73f4; margin: 20px 0;"/>
+
+                        <h2 style="text-align:center; color:#062458;">
+                            Quote <span>عرض سعر</span>
+                        </h2>
+
+                            <table style="width:100%; border-collapse:collapse; border:none; margin-bottom:20px; font-family:Arial, Helvetica, sans-serif;border:1px solid white;">
+
+                            <tr>
+                                <td style="border:1px solid #ccc; padding:8px; font-weight:bold;">Customer</td>
+                                <td colspan="4" style="border:1px solid #ccc; padding:8px; text-align:center;">
+                                    <span t-field="doc.partner_id.name"/>
+                                </td>
+                                <td dir="rtl" style="border:1px solid #ccc; padding:8px; text-align:right; font-weight:bold;">العميل</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid #ccc; padding:8px; font-weight:bold;">Quote #</td>
+                                <td style="border:1px solid #ccc; padding:8px; text-align:center;">
+                                    <span t-field="doc.name"/>
+                                </td>
+                                <td dir="rtl" style="border:1px solid #ccc; padding:8px; text-align:right; font-weight:bold;">رقم العرض</td>
+
+                                <td style="border:1px solid #ccc; padding:8px; font-weight:bold;">Date</td>
+                                <td style="border:1px solid #ccc; padding:8px; text-align:center;">
+                                    <span t-field="doc.date_order"/>
+                                </td>
+                                <td dir="rtl" style="border:1px solid #ccc; padding:8px; text-align:right; font-weight:bold;">التاريخ</td>
+                            </tr>
+                        </table>
+
+                        <table class="table table-bordered"
+                               style="width:100%; border-collapse:collapse; font-size:10.5pt;">
+
+                            <thead>
+                            <tr style="background-color: #f8f8f8;">
+                                <th style="text-align: right; border: 1px solid #ddd; padding: 8px; width: 15%;">المجموع<br/>Line amount</th>
+                                <th style="text-align: right; border: 1px solid #ddd; padding: 8px; width: 12%;"> القيمة المضافة<br/>VAT amount</th>
+                                <th style="text-align: right; border: 1px solid #ddd; padding: 8px; width: 15%;">المبلغ الخاضع للضريبة<br/>Taxable amount</th>
+                                <th style="text-align: right; border: 1px solid #ddd; padding: 8px; width: 12%;">السعر<br/>Price</th>
+                                <th style="text-align: center; border: 1px solid #ddd; padding: 8px; width: 8%;">الكمية<br/>Qty</th>
+                                <th style="text-align: right; border: 1px solid #ddd; padding: 8px;">الوصف<br/>Description</th>
+                                <th style="text-align: center; border: 1px solid #ddd; padding: 8px; width: 5%;">#</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                                <t t-foreach="doc.order_line" t-as="line">
+                                    <tr>
+                                        <td style="text-align: right; border: 1px solid #ddd; padding: 8px; font-weight: bold;">
+                                            <span t-field="line.price_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                        <td style="text-align: right; border: 1px solid #ddd; padding: 8px;">
+                                            <span t-esc="line.price_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                        <td style="text-align: right; border: 1px solid #ddd; padding: 8px;">
+                                            <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                        <td style="text-align: right; border: 1px solid #ddd; padding: 8px;">
+                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                        <td style="text-align: center; border: 1px solid #ddd; padding: 8px;">
+                                            <span t-esc="line.product_uom_qty"/>
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 8px;">
+                                            <span t-field="line.name"/>
+                                        </td>
+                                        <td style="text-align: center; border: 1px solid #ddd; padding: 8px;">
+                                            <span t-esc="line_index + 1"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+
+                        </table>
+
+                        <div style="margin-top:40px; float:left; width:45%;">
+
+                            <table style="width:100%; border-collapse:collapse;">
+
+                                <tr>
+                                    <td style="border:1px solid #ddd; padding:10px;">
+                                        Subtotal
+                                    </td>
+                                    <td style="border:1px solid #ddd; padding:10px; text-align:right;">
+                                        <span t-field="doc.amount_untaxed"
+                                              t-options='{"widget":"monetary","display_currency":doc.currency_id}'/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border:1px solid #ddd; padding:10px;">
+                                        VAT
+                                    </td>
+                                    <td style="border:1px solid #ddd; padding:10px; text-align:right;">
+                                        <span t-field="doc.amount_tax"
+                                              t-options='{"widget":"monetary","display_currency":doc.currency_id}'/>
+                                    </td>
+                                </tr>
+
+                                <tr style="background:#f0f0f0;">
+                                    <td style="border:1px solid #ddd; padding:12px; font-weight:bold;">
+                                        Total
+                                    </td>
+                                    <td style="border:1px solid #ddd; padding:12px; text-align:right; font-weight:bold;">
+                                        <span t-field="doc.amount_total"
+                                              t-options='{"widget":"monetary","display_currency":doc.currency_id}'/>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </t>
+
+            </t>
+
+        </xpath>
+
+    </template>
+
+</odoo>

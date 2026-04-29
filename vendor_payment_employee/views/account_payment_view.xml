@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================================= -->
+    <!-- Account Payment Form Inherit -->
+    <!-- ========================================================= -->
+    <record id="view_account_payment_form_inherit_employee" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.employee</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+
+            <!-- ================= Employee / Department ================= -->
+
+            <!-- تحت Vendor مباشرة -->
+            <xpath expr="//field[@name='partner_id'][@invisible=&quot;partner_type != 'supplier'&quot;]"
+                   position="after">
+                <field name="employee_id"/>
+                <field name="department_id" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                        <field name="payment_type" invisible="1"/>
+
+                <field name="payment_type_display" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_type']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+
+            <!-- Kind of Payment -->
+            <xpath expr="//field[@name='partner_bank_id']" position="after">
+                <field name="kind_of_payment_id"/>
+                 <field name="project_id"/>
+
+            </xpath>
+
+            <!-- ================= Request Statusbar ================= -->
+            <xpath expr="//header" position="after">
+            <div style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                margin-top: 10px;
+            ">
+                <field name="request_state"
+                    widget="statusbar"
+                    statusbar_visible="draft,requested,manager,accounting,ceo"
+                    options="{'clickable': False}" 
+                    style="width: 100%; max-width: 900px;"/>
+            </div>
+            </xpath>
+
+            <!-- ================= Buttons ================= -->
+
+        <xpath expr="//button[@name='action_post']" position="before">
+
+            <!-- زر Request Payment -->
+            <button name="action_request_payment"
+                    string="Request Payment"
+                    type="object"
+                    class="btn btn-secondary"
+                    groups="vendor_payment_employee.group_request_payment"
+                    invisible="request_state != 'draft'"/>
+
+            <!-- Manager Approve button -->
+            <button name="action_manager_approve"
+                    string="Purchase Manager"
+                    type="object"
+                    class="btn btn-secondary"
+                    groups="vendor_payment_employee.group_payment_manager"
+                    invisible="state != 'manager' and request_state !='requested'"/>
+
+            <!-- Accounting Approve button -->
+            <button name="action_accounting_approve"
+                    string="Accounting Approve"
+                    type="object"
+                    class="btn btn-secondary"
+                    groups="vendor_payment_employee.group_payment_accounting"
+                    invisible="request_state != 'manager'"/>
+
+            <!-- CEO Confirm button -->
+            <button name="action_ceo_confirm"
+                    string="CO Confirm"
+                    type="object"
+                    class="btn btn-primary"
+                    groups="vendor_payment_employee.group_payment_ceo"
+                    invisible="request_state != 'accounting'"/>
+
+        </xpath>
+
+        <!-- Confirm / Post button remains as is -->
+        <xpath expr="//button[@name='action_post']" position="attributes">
+            <attribute name="invisible">
+               request_state != 'ceo' or (not current_user_allow_payment_confirm)
+            </attribute>
+        </xpath>
+
+
+
+            <!-- ================= Sequence ================= -->
+
+            <!-- إخفاء الـ name الأصلي -->
+            <!-- <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="invisible">show_employee_fields</attribute>
+            </xpath> -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="custom_sequence" readonly="1"/>
+            </xpath>
+
+            <!-- إظهار الـ custom sequence -->
+            <xpath expr="//field[@name='payment_type']" position="before">
+
+                <div style="font-size: 28px;font-weight: 600;line-height: 1.4;margin-bottom: 12px;" invisible="request_state == 'draft' or state!='draft'">
+
+                    <field name="custom_sequence"
+                           nolabel="1"
+                           readonly="1"
+                           style="
+                   border: none;
+                   background: transparent;
+                   padding-left: 0;
+               "/>
+
+                </div>
+
+            </xpath>
+
+
+            <!-- تغيير اسم memo -->
+            <xpath expr="//field[@name='memo']" position="attributes">
+                <attribute name="string">Ref</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ========================================================= -->
+    <!-- Sequence -->
+    <!-- ========================================================= -->
+    <record id="seq_vendor_payment_prh" model="ir.sequence">
+        <field name="name">Vendor Payment PRH</field>
+        <field name="code">account.payment.prh</field>
+        <field name="prefix">PRV/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

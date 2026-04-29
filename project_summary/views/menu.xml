@@ -1,0 +1,20 @@
+<odoo>
+
+    <menuitem id="menu_project_summary_root"
+              name="Projects Report"
+              parent="project_management_app.menu_project_management_root"
+              sequence="50"/>
+
+    <record id="action_project_summary" model="ir.actions.act_window">
+        <field name="name">Projects</field>
+        <field name="res_model">project.summary</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <menuitem id="menu_project_summary"
+              name="Projects"
+              parent="menu_project_summary_root"
+              action="action_project_summary"
+              sequence="10"/>
+
+</odoo>

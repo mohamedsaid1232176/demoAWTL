@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- بيانات تجريبية لنوع المستخلص -->
+    <record id="mostakhlas_type_civil" model="mostakhlas.type">
+        <field name="name">أعمال مدنية</field>
+    </record>
+    <record id="mostakhlas_type_mech" model="mostakhlas.type">
+        <field name="name">أعمال ميكانيكية</field>
+    </record>
+    <record id="mostakhlas_type_elec" model="mostakhlas.type">
+        <field name="name">أعمال كهربائية</field>
+    </record>
+    <record id="mostakhlas_type_finish" model="mostakhlas.type">
+        <field name="name">أعمال تشطيبات</field>
+    </record>
+</odoo>

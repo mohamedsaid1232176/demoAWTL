@@ -1,0 +1,14 @@
+<odoo>
+  <template id="partner_ledger_extra_options_inherit"
+            inherit_id="account_reports.PartnerLedgerExtraOptions"
+            name="Partner Ledger Extra Options All Journals">
+    <xpath expr="//DropdownItem[contains(@class, 'filter_show_all_hook')]" position="after">
+      <DropdownItem
+          class="o-dropdown-item dropdown-item o-navigable filter_all_journals_hook"
+          role="menuitem"
+          tabindex="0">
+        <i class="fa fa-book me-1"/> All Journals (TEST)
+      </DropdownItem>
+    </xpath>
+  </template>
+</odoo>

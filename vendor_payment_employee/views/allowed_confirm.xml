@@ -1,0 +1,28 @@
+<odoo>
+
+
+    <record id="view_users_form_allowed_confirm_tab" model="ir.ui.view">
+        <field name="name">res.users.form.allowed.confirm.tab</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Notebook بتاع اليوزر -->
+            <xpath expr="//notebook" position="inside">
+
+                <page string="Allowed Confirm">
+
+
+                    <group>
+                        <field name="allow_payment_confirm"/>
+                    </group>
+
+                </page>
+
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

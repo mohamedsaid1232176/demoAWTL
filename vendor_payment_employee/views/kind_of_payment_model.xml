@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_kind_of_payment_tree" model="ir.ui.view">
+        <field name="name">kind.of.payment.tree</field>
+        <field name="model">kind.of.payment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_kind_of_payment_form" model="ir.ui.view">
+        <field name="name">kind.of.payment.form</field>
+        <field name="model">kind.of.payment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
