@@ -170,6 +170,7 @@ class CrmLead(models.Model):
         })
 
         group_to_sol = {}
+        milestone_line_to_sol = {}
 
         # ----------------------------
         # Create SO Lines for Groups
@@ -178,25 +179,60 @@ class CrmLead(models.Model):
             tmpl = group.milestone_id
             variant = tmpl.product_variant_id
 
-            # استخدم سعر الجروب نفسه وليس سعر المشروع
-            group_total_unit_price = (
-                    (group.total_goods_unit_price or 0.0) +
-                    (group.total_service_unit_price or 0.0)
-            )
-
-            if group.quantity:
-                unit_price = group_total_unit_price / group.quantity
-            else:
-                unit_price = 0.0
-            sol = self.env["sale.order.line"].create({
+            self.env["sale.order.line"].create({
                 "order_id": sale_order.id,
-                "product_id": variant.id,
-                "product_uom_qty": group.quantity or 1,
-                "price_unit": unit_price,
                 "name": tmpl.name,
+                "display_type": "line_section",
             })
 
-            group_to_sol[group.id] = sol.id
+            milestone_sale_line = False
+
+            if group.goods_line_ids or group.total_goods_unit_price:
+                self.env["sale.order.line"].create({
+                    "order_id": sale_order.id,
+                    "name": f"Goods - Total Unit Price: {group.total_goods_unit_price or 0.0:.2f}",
+                    "display_type": "line_section",
+                })
+                for line in group.goods_line_ids:
+                    line_qty = line.qty or 1.0
+                    goods_sol = self.env["sale.order.line"].create({
+                        "order_id": sale_order.id,
+                        "product_id": line.product_id.id,
+                        "product_uom_qty": line_qty,
+                        "price_unit": (line.unit_price or 0.0) / line_qty,
+                        "name": line.description or line.product_id.display_name,
+                    })
+                    milestone_line_to_sol[line.id] = goods_sol.id
+                    milestone_sale_line = milestone_sale_line or goods_sol
+
+            if group.service_line_ids or group.total_service_unit_price:
+                self.env["sale.order.line"].create({
+                    "order_id": sale_order.id,
+                    "name": f"Services - Total Unit Price: {group.total_service_unit_price or 0.0:.2f}",
+                    "display_type": "line_section",
+                })
+                for line in group.service_line_ids:
+                    line_qty = line.qty or 1.0
+                    service_sol = self.env["sale.order.line"].create({
+                        "order_id": sale_order.id,
+                        "product_id": line.product_id.id,
+                        "product_uom_qty": line_qty,
+                        "price_unit": (line.unit_price or 0.0) / line_qty,
+                        "name": line.description or line.product_id.display_name,
+                    })
+                    milestone_line_to_sol[line.id] = service_sol.id
+                    milestone_sale_line = milestone_sale_line or service_sol
+
+            if not milestone_sale_line:
+                milestone_sale_line = self.env["sale.order.line"].create({
+                    "order_id": sale_order.id,
+                    "product_id": variant.id,
+                    "product_uom_qty": group.quantity or 1.0,
+                    "price_unit": 0.0,
+                    "name": tmpl.name,
+                })
+
+            group_to_sol[group.id] = milestone_sale_line.id
 
         # ----------------------------
         # COPY milestone groups into Sale Order
@@ -214,10 +250,15 @@ class CrmLead(models.Model):
                     "goods_group_id": new_group.id,
                     "product_id": line.product_id.id,
                     "qty": line.qty,
+                    "pricing_method": line.pricing_method,
+                    "pricelist_id": line.pricelist_id.id,
                     "margin": line.margin,
                     "manual_product_cost": line.manual_product_cost,
                     "manual_product_sale_price": line.manual_product_sale_price,
                     "type": "goods",
+                    "source_line_id": line.id,
+                    "sale_order_line_id": milestone_line_to_sol.get(line.id),
+                    "line_update_state": line.line_update_state or "from_pipeline",
                 })
 
             # Copy SERVICES lines
@@ -226,10 +267,15 @@ class CrmLead(models.Model):
                     "service_group_id": new_group.id,
                     "product_id": line.product_id.id,
                     "qty": line.qty,
+                    "pricing_method": line.pricing_method,
+                    "pricelist_id": line.pricelist_id.id,
                     "margin": line.margin,
                     "manual_product_cost": line.manual_product_cost,
                     "manual_product_sale_price": line.manual_product_sale_price,
                     "type": "service",
+                    "source_line_id": line.id,
+                    "sale_order_line_id": milestone_line_to_sol.get(line.id),
+                    "line_update_state": line.line_update_state or "from_pipeline",
                 })
 
         # ----------------------------

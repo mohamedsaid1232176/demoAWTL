@@ -73,23 +73,48 @@
 
 
                                     <!-- GOODS CARD -->
+                                    <div class="button-row">
+                                        <button name="action_open_goods_popup"
+                                                type="object"
+                                                string="📦 Add New Goods"
+                                                class="btn-info cool-btn"/>
+                                    </div>
+
                                     <div class="table-block">
                                         <h4>📦 Goods</h4>
                                         <field name="goods_line_ids">
                                             <list editable="top">
+                                                <field name="current_stage" column_invisible="1"/>
                                                 <field name="product_id" readonly="1"/>
                                                 <field name="type" readonly="1"/>
                                                 <field name="manual_product_cost" readonly="1"/>
-                                                <field name="manual_product_sale_price"
-                                                       invisible="current_stage == 'technical'" readonly="1"/>
+                                                <field name="pricing_method" readonly="1"/>
+                                                <field name="pricelist_id"
+                                                       invisible="pricing_method != 'pricelist'"
+                                                       readonly="1"/>
+                                                <field name="pricelist_sale_price"
+                                                       string="Sale Price"
+                                                       invisible="current_stage == 'technical' or pricing_method != 'pricelist'"
+                                                       readonly="1"/>
                                                 <field name="qty" readonly="1"/>
                                                 <field name="delivered_quantity" readonly="1"/>
 
                                                 <field name="margin"
-                                                       invisible="current_stage == 'technical'" readonly="1"/>
+                                                       invisible="current_stage == 'technical' or pricing_method != 'margin'"
+                                                       readonly="1"/>
                                                 <field name="unit_price"
                                                        invisible="current_stage == 'technical'" readonly="1"/>
                                                 <field name="selected_for_po"/>
+                                                <button name="action_open_replace_item_wizard"
+                                                        type="object"
+                                                        string="Replace &amp; Modify"
+                                                        class="btn-link"/>
+                                                <field name="line_update_state"
+                                                       widget="badge"
+                                                       decoration-success="line_update_state == 'from_pipeline'"
+                                                       decoration-warning="line_update_state == 'replaced'"
+                                                       decoration-info="line_update_state == 'added_sale_order'"
+                                                       readonly="1"/>
                                             </list>
                                         </field>
 
@@ -105,21 +130,46 @@
                                     </div>
 
                                     <!-- SERVICES CARD -->
+                                    <div class="button-row service-button-row">
+                                        <button name="action_open_services_popup"
+                                                type="object"
+                                                string="🛠 Add New Service"
+                                                class="btn-service cool-btn"/>
+                                    </div>
+
                                     <div class="table-block">
                                         <h4>🛠 Services</h4>
                                         <field name="service_line_ids">
                                             <list editable="top">
+                                                <field name="current_stage" column_invisible="1"/>
                                                 <field name="product_id" readonly="1"/>
                                                 <field name="type" readonly="1"/>
                                                 <field name="manual_product_cost" readonly="1"/>
-                                                <field name="manual_product_sale_price"
-                                                       invisible="current_stage == 'technical'" readonly="1"/>
+                                                <field name="pricing_method" readonly="1"/>
+                                                <field name="pricelist_id"
+                                                       invisible="pricing_method != 'pricelist'"
+                                                       readonly="1"/>
+                                                <field name="pricelist_sale_price"
+                                                       string="Sale Price"
+                                                       invisible="current_stage == 'technical' or pricing_method != 'pricelist'"
+                                                       readonly="1"/>
                                                 <field name="qty" readonly="1"/>
                                                 <field name="margin"
-                                                       invisible="current_stage == 'technical'" readonly="1"/>
+                                                       invisible="current_stage == 'technical' or pricing_method != 'margin'"
+                                                       readonly="1"/>
                                                 <field name="unit_price"
                                                        invisible="current_stage == 'technical'" readonly="1"/>
                                                 <field name="selected_for_po"/>
+                                                <button name="action_open_replace_item_wizard"
+                                                        type="object"
+                                                        string="Replace &amp; Modify"
+                                                        class="btn-link"/>
+                                                <field name="line_update_state"
+                                                       widget="badge"
+                                                       decoration-success="line_update_state == 'from_pipeline'"
+                                                       decoration-warning="line_update_state == 'replaced'"
+                                                       decoration-info="line_update_state == 'added_sale_order'"
+                                                       readonly="1"/>
                                             </list>
                                         </field>
 

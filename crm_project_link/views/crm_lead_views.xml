@@ -73,38 +73,11 @@
 
             <xpath expr="//notebook" position="inside">
 
-                <page string="Event Information"
+                <page string="BOM Informations"
                       invisible="not show_event_tab">
 
 
-                    <group string="Location Information">
-                        <field name="event_location"/>
-
-                        <!-- الخريطة -->
-                        <field name="event_latitude"/>
-                        <field name="event_longitude" widget="map"
-                               options="{'lat_field': 'event_latitude', 'lng_field': 'event_longitude'}"/>
-                    </group>
-
-                    <group string="Event Details">
-                        <field name="event_attendees"/>
-
-                        <field name="event_has_gifts" widget="radio"/>
-
-                        <field name="gift_count" invisible="not show_gift_fields"/>
-                        <field name="gift_item_ids"
-                               widget="many2many_tags"
-                               invisible="not show_gift_fields"/>
-                        <field name="kind_of_event"/>
-
-                    </group>
-
-
-                    <group string="Event Type">
-                        <field name="event_type_id"/>
-                    </group>
-
-                    <group string="Other Requests">
+                    <group string="customer Requests">
                         <field name="other_requests" placeholder="Write extra requirements here..."/>
                     </group>
 
@@ -119,7 +92,7 @@
                         />
                     </group>
 
-                    <group string="Other Requests">
+                    <group string="customer Requests">
                         <field name="other_requests" placeholder="Write extra requirements here..."/>
                     </group>
 
@@ -135,9 +108,18 @@
                         <field name="event_longitude"/>
                     </group>
 
-                    <group string="Other Requests">
+                    <group string="customer Requests">
                         <field name="other_requests" placeholder="Write extra requirements here..."/>
                     </group>
+
+                </page>
+                <page string="Media"
+                      invisible="not show_media_tab">
+
+                    <label for="media_type" string="Info"/>
+                    <field name="media_type"
+                           placeholder="add media info"
+                           options="{'collaborative': true}"/>
 
                 </page>
                 <page string="لوحات"

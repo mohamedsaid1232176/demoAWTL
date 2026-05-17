@@ -34,11 +34,6 @@ class ServicesWizard(models.TransientModel):
         return wizard
 
     def action_add_services(self):
-        for p in self.product_ids:
-            self.env['crm.milestone.line'].create({
-                'service_group_id': self.env.context.get('default_group_idx'),
-                'service_lead_id': self.lead_id.id,
-                'product_id': p.id,
-                'type': 'service',
-            })
+        group = self.env["crm.milestone.group"].browse(self.env.context.get("default_group_idx"))
+        group.add_products_from_selector(self.product_ids, "service")
         return {'type': 'ir.actions.act_window_close'}

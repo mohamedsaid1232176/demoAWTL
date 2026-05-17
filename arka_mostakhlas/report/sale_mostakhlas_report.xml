@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="action_report_sale_mostakhlas" model="ir.actions.report">
-        <field name="name">Sale Cheque / شيك الدفعة</field>
+        <field name="name">طباعه مستخلص</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">arka_mostakhlas.report_sale_mostakhlas</field>

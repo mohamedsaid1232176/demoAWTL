@@ -32,6 +32,12 @@ class SaleMostakhlasLine(models.Model):
 
     mostakhlas_type_id = fields.Many2one("mostakhlas.type", string="نوع المستخلص")
 
+    sale_line_id = fields.Many2one(
+        "sale.order.line",
+        string="Sale Order Line",
+        ondelete="set null",
+        index=True,
+    )
     product_id = fields.Many2one("product.product", string="المنتج")
     name = fields.Text(string="الوصف")
 

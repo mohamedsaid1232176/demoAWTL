@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import _, Command, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class SaleOrder(models.Model):
@@ -50,6 +50,40 @@ class SaleOrder(models.Model):
     )
 
     project_id = fields.Many2one("project.project", string="Project")
+    mostakhlas_proforma_invoice_ids = fields.One2many(
+        "account.move",
+        "mostakhlas_sale_order_id",
+        string="Mostakhlas Proforma Invoices",
+    )
+    mostakhlas_proforma_invoice_count = fields.Integer(
+        string="Proforma Invoices",
+        compute="_compute_mostakhlas_proforma_invoice_count",
+    )
+
+    @api.depends("mostakhlas_proforma_invoice_ids.state")
+    def _compute_mostakhlas_proforma_invoice_count(self):
+        for order in self:
+            order.mostakhlas_proforma_invoice_count = len(
+                order.mostakhlas_proforma_invoice_ids.filtered(
+                    lambda move: move.state == "draft"
+                    and move.is_sale_mostakhlas_proforma
+                )
+            )
+
+    @api.depends("order_line.invoice_lines", "mostakhlas_proforma_invoice_ids.state")
+    def _get_invoiced(self):
+        for order in self:
+            regular_invoices = order.order_line.invoice_lines.move_id.filtered(
+                lambda move: move.move_type in ("out_invoice", "out_refund")
+                and move.state == "posted"
+            )
+            posted_mostakhlas_invoices = order.mostakhlas_proforma_invoice_ids.filtered(
+                lambda move: move.state == "posted"
+                and move.is_sale_mostakhlas_proforma
+            )
+            invoices = regular_invoices | posted_mostakhlas_invoices
+            order.invoice_ids = invoices
+            order.invoice_count = len(invoices)
 
     # ══════════════════════════════════════════════════
     #                 CURRENCY
@@ -261,15 +295,23 @@ class SaleOrder(models.Model):
     # ══════════════════════════════════════════════════
     def action_open_mostakhlas_tab(self):
         for order in self:
-            existing = set(order.mostakhlas_line_ids.mapped("product_id").ids)
+            existing_sale_lines = set(order.mostakhlas_line_ids.mapped("sale_line_id").ids)
+            existing_unlinked_products = set(
+                order.mostakhlas_line_ids.filtered(
+                    lambda mostakhlas_line: not mostakhlas_line.sale_line_id
+                ).mapped("product_id").ids
+            )
             seq = len(order.mostakhlas_line_ids)
             new_vals = []
             for line in order.order_line.filtered(lambda l: not l.display_type):
-                if line.product_id.id in existing:
+                if line.id in existing_sale_lines:
+                    continue
+                if line.product_id.id in existing_unlinked_products:
                     continue
                 seq += 1
                 new_vals.append({
                     "order_id": order.id,
+                    "sale_line_id": line.id,
                     "sequence_int": seq,
                     "product_id": line.product_id.id,
                     "name": line.name,
@@ -284,6 +326,114 @@ class SaleOrder(models.Model):
                 self.env["sale.mostakhlas.line"].create(new_vals)
             order.show_mostakhlas_tab = True
         return True
+
+    def _get_selected_mostakhlas_invoice_lines(self):
+        self.ensure_one()
+        selected = self.mostakhlas_line_ids.filtered(lambda line: line.print_in_report)
+        if not selected:
+            raise UserError(_("Please select at least one Mostakhlas line."))
+        invalid_lines = selected.filtered(lambda line: (line.progress_percent or 0.0) <= 0.0)
+        if invalid_lines:
+            raise UserError(_("Current Progress %% must be greater than 0 for selected lines."))
+        return selected
+
+    def _find_mostakhlas_sale_line(self, mostakhlas_line):
+        self.ensure_one()
+        sale_line = mostakhlas_line.sale_line_id
+        if sale_line and sale_line.order_id == self:
+            return sale_line
+        return self.order_line.filtered(
+            lambda line: not line.display_type
+            and line.product_id == mostakhlas_line.product_id
+        )[:1]
+
+    def _prepare_mostakhlas_invoice_line_vals(self, mostakhlas_line, sequence):
+        self.ensure_one()
+        sale_line = self._find_mostakhlas_sale_line(mostakhlas_line)
+        invoice_qty = (mostakhlas_line.product_qty or 0.0) * (
+            (mostakhlas_line.progress_percent or 0.0) / 100.0
+        )
+        if sale_line:
+            vals = sale_line._prepare_invoice_line(sequence=sequence)
+            vals.pop("sale_line_ids", None)
+            vals.update({
+                "quantity": invoice_qty,
+                "name": mostakhlas_line.name or vals.get("name"),
+                "product_id": mostakhlas_line.product_id.id,
+                "product_uom_id": mostakhlas_line.product_uom.id,
+                "price_unit": mostakhlas_line.price_unit,
+                "discount": mostakhlas_line.discount,
+                "tax_ids": [Command.set(mostakhlas_line.taxes_id.ids)],
+            })
+            if mostakhlas_line.analytic_distribution:
+                vals["analytic_distribution"] = mostakhlas_line.analytic_distribution
+            return vals
+        return {
+            "display_type": "product",
+            "sequence": sequence,
+            "name": mostakhlas_line.name or mostakhlas_line.product_id.display_name,
+            "product_id": mostakhlas_line.product_id.id,
+            "product_uom_id": mostakhlas_line.product_uom.id,
+            "quantity": invoice_qty,
+            "price_unit": mostakhlas_line.price_unit,
+            "discount": mostakhlas_line.discount,
+            "tax_ids": [Command.set(mostakhlas_line.taxes_id.ids)],
+            "analytic_distribution": mostakhlas_line.analytic_distribution,
+        }
+
+    def _create_mostakhlas_proforma_invoice(self):
+        self.ensure_one()
+        selected = self._get_selected_mostakhlas_invoice_lines()
+
+        invoice_vals = self._prepare_invoice()
+        invoice_vals.update({
+            "move_type": "out_invoice",
+            "is_sale_mostakhlas_proforma": True,
+            "mostakhlas_sale_order_id": self.id,
+            "invoice_line_ids": [],
+        })
+        for sequence, mostakhlas_line in enumerate(selected, start=1):
+            invoice_vals["invoice_line_ids"].append(
+                Command.create(
+                    self._prepare_mostakhlas_invoice_line_vals(mostakhlas_line, sequence)
+                )
+            )
+
+        invoice = self.env["account.move"].sudo().with_context(
+            default_move_type="out_invoice",
+            move_type="out_invoice",
+            arka_mostakhlas_proforma=True,
+        ).create(invoice_vals)
+        selected.write({"print_in_report": False})
+        invoice.message_post_with_source(
+            "mail.message_origin_link",
+            render_values={"self": invoice, "origin": self},
+            subtype_xmlid="mail.mt_note",
+        )
+        return invoice
+
+    def action_view_mostakhlas_proforma_invoices(self):
+        self.ensure_one()
+        invoices = self.mostakhlas_proforma_invoice_ids.filtered(
+            lambda move: move.state == "draft"
+            and move.is_sale_mostakhlas_proforma
+        )
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "account.action_move_out_invoice_type"
+        )
+        if len(invoices) > 1:
+            action["domain"] = [("id", "in", invoices.ids)]
+        elif len(invoices) == 1:
+            action["views"] = [(self.env.ref("account.view_move_form").id, "form")]
+            action["res_id"] = invoices.id
+        else:
+            action = {"type": "ir.actions.act_window_close"}
+        action["context"] = {
+            "default_move_type": "out_invoice",
+            "default_partner_id": self.partner_id.id,
+            "default_partner_shipping_id": self.partner_shipping_id.id,
+        }
+        return action
 
     # ══════════════════════════════════════════════════
     #           PRINT MOSTAKHLAS
@@ -301,15 +451,15 @@ class SaleOrder(models.Model):
 
         for line in selected:
             pct = line.progress_percent or 0.0
-            if pct <= 0:
-                raise ValidationError(
-                    f"Progress % for line {line.sequence_int} must be greater than 0."
-                )
+            # if pct <= 0:
+            #     raise ValidationError(
+            #         f"Progress % for line {line.sequence_int} must be greater than 0."
+            #     )
             new_done = (line.done_progress or 0.0) + pct
-            if new_done > 100:
-                raise ValidationError(
-                    f"Total progress for line {line.sequence_int} exceeds 100%."
-                )
+            # if new_done > 100:
+            #     raise ValidationError(
+            #         f"Total progress for line {line.sequence_int} exceeds 100%."
+            #     )
             line.done_progress = new_done
 
         self.env["sale.mostakhlas.print.buffer"].search(

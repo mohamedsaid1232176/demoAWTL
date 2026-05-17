@@ -29,10 +29,12 @@ class ResUsers(models.Model):
 class CrmLead(models.Model):
     _inherit = "crm.lead"
 
+    def init(self):
+        self.pool.post_init(self._setup_kind_of_event_data)
+
     project_type = fields.Selection(
         [
             ('project', 'Project'),
-            ('final_product', 'اللوحات'),
         ],
         string="Operation Type",
         default='project'
@@ -285,6 +287,11 @@ class CrmLead(models.Model):
                 }
 
     def write(self, vals):
+        if vals.get("kind_of_event") and not vals.get("kind_of_event_ids"):
+            kind_id = self._get_kind_of_event_id(vals["kind_of_event"])
+            if kind_id:
+                vals["kind_of_event_ids"] = [(4, kind_id)]
+
         res = super().write(vals)
 
         for lead in self:
@@ -305,6 +312,15 @@ class CrmLead(models.Model):
                     lead.project_id.write(updates)
 
         return res
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("kind_of_event") and not vals.get("kind_of_event_ids"):
+                kind_id = self._get_kind_of_event_id(vals["kind_of_event"])
+                if kind_id:
+                    vals["kind_of_event_ids"] = [(4, kind_id)]
+        return super().create(vals_list)
 
     is_arka_company = fields.Boolean(
         compute="_compute_is_arka_company",
@@ -361,11 +377,10 @@ class CrmLead(models.Model):
 
     project_event_type = fields.Selection(
         [
-            ('event', 'Event'),
-            ('gift', 'Gift Items'),
-            ('both', 'Both'),
+            ('bom', 'BOM'),
         ],
         string="Project Category",
+        default='bom',
     )
     show_event_category = fields.Boolean(compute="_compute_show_project_info")
 
@@ -395,7 +410,15 @@ class CrmLead(models.Model):
             ('launching', 'التدشين'),
             ('internal_comments', 'الفعاليات الداخلية'),
         ],
-        string="Kind of Event"
+        string="Legacy Kind of Event"
+    )
+    kind_of_event_id = fields.Many2one("kind.of.event", string="Legacy Kind of Event Record")
+    kind_of_event_ids = fields.Many2many(
+        "kind.of.event",
+        "crm_lead_kind_of_event_rel",
+        "lead_id",
+        "kind_id",
+        string="Kind of Event",
     )
 
     gift_count = fields.Integer("Number of Gifts")
@@ -403,13 +426,68 @@ class CrmLead(models.Model):
 
     event_type_id = fields.Many2one("event.type", string="Event Type")
 
-    other_requests = fields.Text("Other Requests")
+    other_requests = fields.Text("customer Requests")
+
+    def _get_kind_of_event_id(self, legacy_key):
+        kind = self.env["kind.of.event"].search([("legacy_key", "=", legacy_key)], limit=1)
+        return kind.id if kind else False
+
+    def _setup_kind_of_event_data(self):
+        self._create_default_kind_of_event_records()
+        self._migrate_kind_of_event_selection()
+
+    def _create_default_kind_of_event_records(self):
+        KindOfEvent = self.env["kind.of.event"].sudo()
+        for legacy_key, name in [
+            ("launching", "التدشين"),
+            ("internal_comments", "الفعاليات الداخلية"),
+        ]:
+            kind = KindOfEvent.search([("legacy_key", "=", legacy_key)], limit=1)
+            if not kind:
+                kind = KindOfEvent.search([("name", "=", name)], limit=1)
+            if kind:
+                if not kind.legacy_key:
+                    kind.legacy_key = legacy_key
+            else:
+                KindOfEvent.create({
+                    "name": name,
+                    "legacy_key": legacy_key,
+                })
+
+    def _migrate_kind_of_event_selection(self):
+        self.env.cr.execute("""
+            INSERT INTO crm_lead_kind_of_event_rel (lead_id, kind_id)
+            SELECT lead.id, kind.id
+              FROM crm_lead lead
+              JOIN kind_of_event kind ON lead.kind_of_event = kind.legacy_key
+             WHERE lead.kind_of_event IS NOT NULL
+               AND NOT EXISTS (
+                    SELECT 1
+                      FROM crm_lead_kind_of_event_rel rel
+                     WHERE rel.lead_id = lead.id
+                       AND rel.kind_id = kind.id
+               )
+        """)
+        self.env.cr.execute("""
+            INSERT INTO crm_lead_kind_of_event_rel (lead_id, kind_id)
+            SELECT lead.id, lead.kind_of_event_id
+              FROM crm_lead lead
+             WHERE lead.kind_of_event_id IS NOT NULL
+               AND NOT EXISTS (
+                    SELECT 1
+                      FROM crm_lead_kind_of_event_rel rel
+                     WHERE rel.lead_id = lead.id
+                       AND rel.kind_id = lead.kind_of_event_id
+               )
+        """)
 
     # -------- Visibility Fields ----------
     show_event_tab = fields.Boolean(compute="_compute_show_event_tab")
     show_gift_fields = fields.Boolean(compute="_compute_show_gift_fields")
     show_gift_tab = fields.Boolean(compute="_compute_show_gift_tab")
     show_both_tab = fields.Boolean(compute="_compute_show_location_tab")
+    show_media_tab = fields.Boolean(compute="_compute_show_media_tab")
+    media_type = fields.Html("Info")
     final_product_description = fields.Text("Boards Description")
     show_final_product_tab = fields.Boolean(compute="_compute_show_final_product_tab")
 
@@ -419,7 +497,7 @@ class CrmLead(models.Model):
         for rec in self:
             rec.show_event_tab = (
                     rec.project_type == 'project' and
-                    rec.project_event_type == 'event'
+                    rec.project_event_type == 'bom'
             )
 
     # -------- Gift Fields Visibility ----------
@@ -432,18 +510,17 @@ class CrmLead(models.Model):
     @api.depends("project_type", "project_event_type")
     def _compute_show_gift_tab(self):
         for rec in self:
-            rec.show_gift_tab = (
-                    rec.project_type == 'project' and
-                    rec.project_event_type == 'gift'
-            )
+            rec.show_gift_tab = False
 
     @api.depends("project_type", "project_event_type")
     def _compute_show_location_tab(self):
         for rec in self:
-            rec.show_both_tab = (
-                    rec.project_type == 'project' and
-                    rec.project_event_type == 'both'
-            )
+            rec.show_both_tab = False
+
+    @api.depends("project_type", "project_event_type")
+    def _compute_show_media_tab(self):
+        for rec in self:
+            rec.show_media_tab = False
 
     @api.depends("project_type")
     def _compute_show_final_product_tab(self):

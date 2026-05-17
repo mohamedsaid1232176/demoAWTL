@@ -13,6 +13,36 @@
         <field name="view_mode">kanban,form</field>
     </record>
 
+    <record id="view_kind_of_event_list" model="ir.ui.view">
+        <field name="name">kind.of.event.list</field>
+        <field name="model">kind.of.event</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_kind_of_event_form" model="ir.ui.view">
+        <field name="name">kind.of.event.form</field>
+        <field name="model">kind.of.event</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_kind_of_event" model="ir.actions.act_window">
+        <field name="name">Kind of Events</field>
+        <field name="res_model">kind.of.event</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
     <!-- Main menu under CRM -->
     <menuitem id="menu_important_info"
               name="Important Info"
@@ -23,11 +53,19 @@
     <menuitem id="menu_event_type"
               name="Event Types"
               parent="menu_important_info"
-              action="action_event_type"/>
+              action="action_event_type"
+              sequence="10"/>
 
     <menuitem id="menu_gift_type"
               name="Gift Types"
               parent="menu_important_info"
-              action="action_gift_type"/>
+              action="action_gift_type"
+              sequence="20"/>
+
+    <menuitem id="menu_kind_of_event"
+              name="Kind of Events"
+              parent="menu_important_info"
+              action="action_kind_of_event"
+              sequence="30"/>
 
 </odoo>

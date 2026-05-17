@@ -111,18 +111,31 @@
                                             <h4>📦 Goods</h4>
                                             <field name="goods_line_ids">
                                                 <list editable="bottom" create="false">
+                                                    <field name="current_stage" column_invisible="1"/>
                                                     <field name="product_id"/>
                                                     <field name="type"/>
                                                     <field name="manual_product_cost"/>
-                                                    <field name="manual_product_sale_price"
-                                                           invisible="1"/>
+                                                    <field name="pricing_method"/>
+                                                    <field name="pricelist_id"
+                                                           invisible="pricing_method != 'pricelist'"
+                                                           required="pricing_method == 'pricelist'"/>
+                                                    <field name="pricelist_sale_price"
+                                                           string="Sale Price"
+                                                           invisible="current_stage == 'technical' or pricing_method != 'pricelist'"
+                                                           readonly="1"/>
                                                     <!--          /\  current_stage == 'technical'-->
 
                                                     <field name="qty"/>
                                                     <field name="margin"
-                                                           invisible="current_stage == 'technical'"/>
+                                                           invisible="current_stage == 'technical' or pricing_method != 'margin'"/>
                                                     <field name="unit_price"
                                                            invisible="current_stage == 'technical'"/>
+                                                    <field name="line_update_state"
+                                                           widget="badge"
+                                                           decoration-success="line_update_state == 'from_pipeline'"
+                                                           decoration-warning="line_update_state == 'replaced'"
+                                                           decoration-info="line_update_state == 'added_sale_order'"
+                                                           readonly="1"/>
                                                 </list>
                                             </field>
 
@@ -159,16 +172,29 @@
                                             <h4>🛠 Services</h4>
                                             <field name="service_line_ids">
                                                 <list editable="bottom" create="false">
+                                                    <field name="current_stage" column_invisible="1"/>
                                                     <field name="product_id"/>
                                                     <field name="type"/>
                                                     <field name="manual_product_cost"/>
-                                                    <field name="manual_product_sale_price"
-                                                           invisible="current_stage == 'technical'"/>
+                                                    <field name="pricing_method"/>
+                                                    <field name="pricelist_id"
+                                                           invisible="pricing_method != 'pricelist'"
+                                                           required="pricing_method == 'pricelist'"/>
+                                                    <field name="pricelist_sale_price"
+                                                           string="Sale Price"
+                                                           invisible="current_stage == 'technical' or pricing_method != 'pricelist'"
+                                                           readonly="1"/>
                                                     <field name="qty"/>
                                                     <field name="margin"
-                                                           invisible="current_stage == 'technical'"/>
+                                                           invisible="current_stage == 'technical' or pricing_method != 'margin'"/>
                                                     <field name="unit_price"
                                                            invisible="current_stage == 'technical'"/>
+                                                    <field name="line_update_state"
+                                                           widget="badge"
+                                                           decoration-success="line_update_state == 'from_pipeline'"
+                                                           decoration-warning="line_update_state == 'replaced'"
+                                                           decoration-info="line_update_state == 'added_sale_order'"
+                                                           readonly="1"/>
                                                 </list>
                                             </field>
                                             <h3>Services Totals</h3>

@@ -59,17 +59,17 @@ class PurchaseOrder(models.Model):
             new = current + (line.progress_percent or 0.0)
 
             # progress must be > 0
-            if (line.progress_percent or 0.0) <= 0:
-                raise ValidationError(
-                    f"نسبة الإنجاز للسطر {line.sequence_int} يجب أن تكون أكبر من 0."
-                )
+            # if (line.progress_percent or 0.0) <= 0:
+            #     raise ValidationError(
+            #         f"نسبة الإنجاز للسطر {line.sequence_int} يجب أن تكون أكبر من 0."
+            #     )
 
             # total must not exceed 100%
-            if new > 100:
-                raise ValidationError(
-                    f"إجمالي نسبة الإنجاز للسطر رقم {line.sequence_int} "
-                    f"تخطت الحد المسموح به (100%)."
-                )
+            # if new > 100:
+            #     raise ValidationError(
+            #         f"إجمالي نسبة الإنجاز للسطر رقم {line.sequence_int} "
+            #         f"تخطت الحد المسموح به (100%)."
+            #     )
 
             # Update
             line.done_progress = new

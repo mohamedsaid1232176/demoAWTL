@@ -26,6 +26,17 @@
                 <field name="mostakhlas_sequence" string="Mostakhlas No." readonly="1"/>
             </xpath>
 
+            <xpath expr="//div[@name='button_box']/button[@name='action_view_invoice']" position="after">
+                <button name="action_view_mostakhlas_proforma_invoices"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o">
+                    <field name="mostakhlas_proforma_invoice_count"
+                           widget="statinfo"
+                           string="Proforma Invoices"/>
+                </button>
+            </xpath>
+
             <!-- ─── Tabs ─────────────────────────────── -->
             <xpath expr="//notebook" position="inside">
 
@@ -37,6 +48,7 @@
                     <field name="mostakhlas_line_ids">
                         <list editable="bottom">
                             <field name="sequence_int"      string="#"           readonly="1"/>
+                            <field name="sale_line_id"      column_invisible="1"/>
                             <field name="product_id"        string="Product"     readonly="1"/>
                             <field name="name"              string="Description" readonly="1"/>
                             <field name="mostakhlas_type_id" string="Type"/>

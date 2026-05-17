@@ -50,6 +50,17 @@
     border-radius: 4px !important;
 }
 
+.service-button-row {
+    margin-top: 24px;
+    margin-bottom: 10px;
+}
+
+.btn-service {
+    background-color: #7c3aed !important;
+    border-color: #7c3aed !important;
+    color: white !important;
+}
+
 .table-block:hover {
     border-color: #4a90e2;
     box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2);

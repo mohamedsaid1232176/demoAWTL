@@ -28,7 +28,8 @@
         "data/cron.xml",
         "wizard/goods_wizard_views.xml",
         "wizard/wizards_button.xml",
-        "wizard/services_wizard_views.xml"
+        "wizard/services_wizard_views.xml",
+        "wizard/replace_item_wizard_views.xml"
     ],
     "installable": True,
     "application": True,

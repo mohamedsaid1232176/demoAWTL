@@ -26,13 +26,7 @@ class GoodsWizard(models.TransientModel):
         return wizard
 
     def action_add_goods(self):
-        for p in self.product_ids:
-            self.env['crm.milestone.line'].create({
-                'goods_group_id': self.env.context.get('default_group_idx'),
-                'goods_lead_id': self.lead_id.id,
-                'product_id': p.id,
-                'type': 'goods',
-            })
+        group = self.env["crm.milestone.group"].browse(self.env.context.get("default_group_idx"))
+        group.add_products_from_selector(self.product_ids, "goods")
         return {'type': 'ir.actions.act_window_close'}
-
 
