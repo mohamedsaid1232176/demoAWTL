@@ -13,6 +13,7 @@ class SaleOrderProjectWizard(models.TransientModel):
         self.ensure_one()
         lead = self.lead_id
         order = self.sale_order_id
+        company = order.company_id or lead.company_id or self.env.company
 
         # ----------------------------------
         # 1) Create Project
@@ -33,23 +34,25 @@ class SaleOrderProjectWizard(models.TransientModel):
             "name": project_name,
             "partner_id": lead.partner_id.id,
             "user_id": manager.id if manager else False,  # 🔥 هنا المهم
+            "company_id": company.id,
         })
 
         # ----------------------------------
         # 🔥 Create Stock Location
         # ----------------------------------
         warehouse = self.env['stock.warehouse'].search([
-            ('is_project_warehouse', '=', True)
+            ('is_project_warehouse', '=', True),
+            ('company_id', '=', company.id),
         ], limit=1)
 
         if not warehouse:
-            raise UserError("لازم تختار Project Warehouse الأول")
+            raise UserError("لازم تختار Project Warehouse الأول لنفس شركة أمر البيع")
 
         location = self.env['stock.location'].create({
             "name": project.name,
             "usage": "internal",
             "location_id": warehouse.view_location_id.id,
-            "company_id": project.company_id.id,
+            "company_id": company.id,
         })
 
         # ربطها بالمشروع
