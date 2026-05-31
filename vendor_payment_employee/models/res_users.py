@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
-ALLOWED_COMPANY_REGISTRIES = ["7012242793", "1010232192","311369490700003"]   # ✅ المتغير الوحيد المستخدم الآن
+ALLOWED_COMPANY_REGISTRIES = ["7012242793", "1010232192","1010689416"]   # ✅ المتغير الوحيد المستخدم الآن
 
 
 

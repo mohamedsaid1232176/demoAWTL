@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
-ARKA_COMPANY_REGISTRY = "311369490700003"
+ARKA_COMPANY_REGISTRY = "1010689416"
 
 
 class PurchaseOrder(models.Model):

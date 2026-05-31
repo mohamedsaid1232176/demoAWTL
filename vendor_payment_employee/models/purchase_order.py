@@ -1,7 +1,7 @@
 from odoo import models, fields, _, api
 from odoo.exceptions import UserError
 
-ARKA_COMPANY_REGISTRY = "311369490700003"
+ARKA_COMPANY_REGISTRY = "1010689416"
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -21,14 +21,14 @@ class PurchaseOrder(models.Model):
     @api.depends('company_id')
     def _compute_show_workflow(self):
         for order in self:
-            order.show_workflow = (order.company_id.company_registry == '311369490700003')
+            order.show_workflow = (order.company_id.company_registry == '1010689416')
 
 
 
     def action_submit_request(self):
         """Draft → procurement_officer"""
         for order in self:
-            if order.company_id.company_registry != '311369490700003':
+            if order.company_id.company_registry != '1010689416':
                 order.message_post(body=_("This workflow is not applicable for this company."))
                 continue
 
@@ -48,7 +48,7 @@ class PurchaseOrder(models.Model):
     def action_review(self):
         """procurement_officer → purchase_manager"""
         for order in self:
-            if order.company_id.company_registry != '311369490700003':
+            if order.company_id.company_registry != '1010689416':
                 order.message_post(body=_("This workflow is not applicable for this company."))
                 continue
 
@@ -67,7 +67,7 @@ class PurchaseOrder(models.Model):
     def action_ceo_confirm(self):
         """CO confirms the purchase order and triggers the real confirm logic"""
         for order in self:
-            if order.company_id.company_registry != '311369490700003':
+            if order.company_id.company_registry != '1010689416':
                 order.message_post(body=_("CO confirmation skipped: not applicable for this company."))
                 continue
 

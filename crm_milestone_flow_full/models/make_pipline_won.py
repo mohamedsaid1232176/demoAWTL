@@ -1,7 +1,7 @@
 from odoo import models, api, fields
 from odoo.exceptions import UserError
 
-ARKA_COMPANY_REGISTRY = "311369490700003"
+ARKA_COMPANY_REGISTRY = "1010689416"
 
 
 class SaleOrder(models.Model):
