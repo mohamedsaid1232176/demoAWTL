@@ -13,9 +13,7 @@
                         string="Make mostakhlas"
                         type="object"
                         class="btn-primary"
-                        invisible="not is_arka_company "/>
-
-                />
+                        invisible="not is_arka_company"/>
 
             </xpath>
 
@@ -37,7 +35,7 @@
                             <field name="product_uom" optional="show" readonly="1"/>
                             <field name="price_unit" optional="show" readonly="1"/>
                             <field name="progress_percent" attrs="{'readonly': [('is_progress_locked','=',True)]}"/>
-                            <field name="done_progress" readonly="1"/>
+                            <field name="done_progress" string="Progress Done %" readonly="1"/>
 
                             <field name="discount" optional="hide" readonly="1"/>
                             <field name="taxes_id" widget="many2many_tags" readonly="1" optional="show"/>

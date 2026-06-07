@@ -7,6 +7,20 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_crm_custom_quotation" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//list//field[@name='price_unit']" position="after">
+                    <field name="line_update_state"
+                           string="Line Status"
+                           widget="badge"
+                           decoration-success="line_update_state == 'from_pipeline'"
+                           decoration-warning="line_update_state == 'replaced'"
+                           decoration-info="line_update_state == 'added_sale_order'"
+                           column_invisible="not parent.is_crm_custom_quotation"
+                           readonly="1"/>
+                </xpath>
 
                 <xpath expr="//sheet/notebook" position="inside">
 

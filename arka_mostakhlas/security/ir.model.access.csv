@@ -3,3 +3,5 @@ access_mostakhlas_type,mostakhlas.type,model_mostakhlas_type,base.group_user,1,1
 access_sale_mostakhlas_line,sale.mostakhlas.line,model_sale_mostakhlas_line,base.group_user,1,1,1,1
 access_sale_mostakhlas_print_buffer,sale.mostakhlas.print.buffer,model_sale_mostakhlas_print_buffer,base.group_user,1,1,1,1
 access_sale_mostakhlas_wizard,sale.mostakhlas.wizard,model_sale_mostakhlas_wizard,base.group_user,1,1,1,1
+access_sale_mostakhlas_add_line_wizard,sale.mostakhlas.add.line.wizard,model_sale_mostakhlas_add_line_wizard,base.group_user,1,1,1,1
+access_account_move_mostakhlas_line,account.move.mostakhlas.line,model_account_move_mostakhlas_line,base.group_user,1,1,1,0

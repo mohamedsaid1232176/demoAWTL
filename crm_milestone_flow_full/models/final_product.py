@@ -35,7 +35,7 @@ class CrmLeadFinalProduct(models.Model):
         self.ensure_one()
 
         # منع التكرار
-        if self.is_final_product_quotation_generated:
+        if self.is_final_product_quotation_generated and not self.env.user.allow_multiple_milestone_quotations:
             raise UserError("❌ غير مسموح بإنشاء عرض سعر Final Product مرة أخرى.")
 
         if not self.final_product_id:

@@ -214,12 +214,14 @@ class CrmLead(models.Model):
 
     is_stage_new = fields.Boolean(compute="_compute_stage_flags", store=False)
     is_stage_technical = fields.Boolean(compute="_compute_stage_flags", store=False)
+    is_stage_project_management = fields.Boolean(compute="_compute_stage_flags", store=False)
     is_stage_designer = fields.Boolean(compute="_compute_stage_flags", store=False)
 
     def _compute_stage_flags(self):
         for rec in self:
             rec.is_stage_new = rec.stage_id.name == "New"
             rec.is_stage_technical = rec.stage_id.name == "Technical Office"
+            rec.is_stage_project_management = rec.stage_id.name == "Projects Management"
             rec.is_stage_designer = rec.stage_id.name == "Designer"
 
     show_button_allowed = fields.Boolean(compute="_compute_button_visibility")

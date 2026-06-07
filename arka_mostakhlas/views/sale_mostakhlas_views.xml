@@ -45,6 +45,11 @@
                       name="sale_mostakhlas_tab"
                       invisible="not show_mostakhlas_tab">
 
+                    <button name="action_open_add_mostakhlas_line_wizard"
+                            string="Add New Line"
+                            type="object"
+                            class="btn-secondary"/>
+
                     <field name="mostakhlas_line_ids">
                         <list editable="bottom">
                             <field name="sequence_int"      string="#"           readonly="1"/>
@@ -53,16 +58,16 @@
                             <field name="name"              string="Description" readonly="1"/>
                             <field name="mostakhlas_type_id" string="Type"/>
                             <field name="product_qty"       string="Qty"         readonly="1"/>
+                            <field name="delivery"          string="Delivery"    readonly="1"/>
                             <field name="product_uom"       string="UoM"         readonly="1"/>
                             <field name="price_unit"        string="Unit Price"  readonly="1"/>
                             <field name="discount"          string="Disc.%"      readonly="1" optional="hide"/>
                             <field name="taxes_id"          string="Taxes"       widget="many2many_tags"
                                                             readonly="1" optional="show"/>
                             <field name="price_subtotal"    string="Amount"      readonly="1"/>
-                            <field name="previous_progress" string="Prev. Progress %"  readonly="1" optional="show"/>
                             <field name="progress_percent"  string="Current Progress %"
                                                             readonly="is_progress_locked"/>
-                            <field name="done_progress"     string="Total Done %"  readonly="1"/>
+                            <field name="done_progress"     string="Progress Done %"  readonly="1"/>
                             <field name="print_in_report"   string="Print"/>
                             <field name="is_progress_locked" column_invisible="1"/>
                         </list>

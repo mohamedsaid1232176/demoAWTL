@@ -25,6 +25,7 @@
         "views/add_field_remaining_days_crm.xml",
         "views/debit_credit_change.xml",
         "views/stock_warehouse_view_checkbox.xml",
+        "views/res_users_project_settings.xml",
         "data/cron.xml",
         "wizard/goods_wizard_views.xml",
         "wizard/wizards_button.xml",

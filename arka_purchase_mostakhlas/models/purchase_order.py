@@ -29,19 +29,6 @@ class PurchaseOrder(models.Model):
         self.vendor_payment_total_paid_in_mostkhlas = 0
 
     def action_print_mostakhlas(self):
-
-        # رقم المستخلص
-        if self.sequence:
-            try:
-                num = int(self.sequence.replace("MO-", ""))
-                num += 1
-            except Exception:
-                num = 1
-        else:
-            num = 1
-
-        self.sequence = f"MO-{num}"
-
         # =====================================================
         # 1. lines المعلمة فقط
         # =====================================================
@@ -50,40 +37,18 @@ class PurchaseOrder(models.Model):
         # لو مفيش متعلم → اعتبرها error
         if not selected_lines:
             raise ValidationError("من فضلك اختر على الأقل بند واحد للطباعة.")
+        self._validate_mostakhlas_progress(selected_lines)
+        self._next_purchase_mostakhlas_number()
 
         # =====================================================
-        # 2. تحديث نسبة الإنجاز (قبل مسح الـ checkboxes)
+        # 2. تحديث إجمالي نسب الإنجاز المستخرجة
         # =====================================================
-        for line in selected_lines:
-            current = line.done_progress or 0.0
-            new = current + (line.progress_percent or 0.0)
-
-            # progress must be > 0
-            # if (line.progress_percent or 0.0) <= 0:
-            #     raise ValidationError(
-            #         f"نسبة الإنجاز للسطر {line.sequence_int} يجب أن تكون أكبر من 0."
-            #     )
-
-            # total must not exceed 100%
-            # if new > 100:
-            #     raise ValidationError(
-            #         f"إجمالي نسبة الإنجاز للسطر رقم {line.sequence_int} "
-            #         f"تخطت الحد المسموح به (100%)."
-            #     )
-
-            # Update
-            line.done_progress = new
+        self._apply_mostakhlas_progress(selected_lines)
 
         # =====================================================
         # 3. نظّف buffer وسجل المختار فقط
         # =====================================================
-        self.env["mostakhlas.print.buffer"].search([("order_id", "=", self.id)]).unlink()
-
-        for line in selected_lines:
-            self.env["mostakhlas.print.buffer"].create({
-                "order_id": self.id,
-                "line_id": line.id
-            })
+        self._set_mostakhlas_print_buffer(selected_lines)
 
         # =====================================================
         # 4. اطبع التقرير (وما ترجّعش checkboxes لسه)
@@ -150,7 +115,6 @@ class PurchaseOrder(models.Model):
         "order_id",
         string="Mostakhlas Lines"
     )
-
     payment_ids = fields.Many2many(
         "account.payment",
         string="Paid Payments",
@@ -334,8 +298,7 @@ class PurchaseOrder(models.Model):
                 line_untaxed = qty * price
                 untaxed += line_untaxed
 
-                # ✅ cumulative (Previous + Current)
-                total_progress = (line.done_progress or 0.0) / 100.0
+                total_progress = (line.progress_percent or 0.0) / 100.0
                 executed_line_value = line_untaxed * total_progress
 
                 executed_untaxed += executed_line_value
@@ -351,7 +314,7 @@ class PurchaseOrder(models.Model):
                     tax_line = sum(t["amount"] for t in taxes_res["taxes"])
                     tax += tax_line
 
-                    # ✅ VAT على القيمة المنفذة (التراكمية)
+                    # VAT على قيمة هذا المستخلص فقط
                     executed_total += executed_line_value * 1.15
                 else:
                     executed_total += executed_line_value
@@ -473,7 +436,6 @@ class PurchaseOrder(models.Model):
     technical_office_manager = fields.Char(string="Technical Office Manager")
     operations_manager = fields.Char(
         string="Operations Manager",
-        default="مصطفى شاهين",
         readonly=True
     )
     subcontractor_name = fields.Char(
@@ -554,6 +516,51 @@ class PurchaseOrder(models.Model):
             "target": "new",
             "context": {"active_id": self.id},
         }
+
+    def _next_purchase_mostakhlas_number(self):
+        self.ensure_one()
+        if self.sequence:
+            try:
+                num = int(self.sequence.replace("MO-", "")) + 1
+            except Exception:
+                num = 1
+        else:
+            num = 1
+        self.sequence = f"MO-{num}"
+        if not self.date_mostakhlas:
+            self.date_mostakhlas = fields.Date.context_today(self)
+        return self.sequence
+
+    def _set_mostakhlas_print_buffer(self, selected_lines):
+        self.ensure_one()
+        self.env["mostakhlas.print.buffer"].search([("order_id", "=", self.id)]).unlink()
+        for line in selected_lines:
+            self.env["mostakhlas.print.buffer"].create({
+                "order_id": self.id,
+                "line_id": line.id,
+            })
+
+    def _validate_mostakhlas_progress(self, selected_lines):
+        for line in selected_lines:
+            pct = line.progress_percent or 0.0
+            current_done = line.done_progress or 0.0
+            if current_done >= 100.0:
+                raise ValidationError(
+                    f"Progress Done للسطر {line.sequence_int} وصل بالفعل إلى 100%."
+                )
+            if pct <= 0.0:
+                raise ValidationError(
+                    f"نسبة الإنجاز الحالية للسطر {line.sequence_int} يجب أن تكون أكبر من 0."
+                )
+            if current_done + pct > 100.0:
+                remaining = max(0.0, 100.0 - current_done)
+                raise ValidationError(
+                    f"نسبة الإنجاز الحالية للسطر {line.sequence_int} لا يمكن أن تتجاوز المتبقي ({remaining:.2f}%)."
+                )
+
+    def _apply_mostakhlas_progress(self, selected_lines):
+        for line in selected_lines:
+            line.done_progress = (line.done_progress or 0.0) + (line.progress_percent or 0.0)
 
 
 # =====================================================

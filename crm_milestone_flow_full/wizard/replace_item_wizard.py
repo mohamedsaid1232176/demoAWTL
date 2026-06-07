@@ -47,8 +47,6 @@ class ReplaceMilestoneItemWizard(models.TransientModel):
     )
     unit_price = fields.Float(
         string="Unit Price",
-        compute="_compute_prices",
-        store=False,
     )
 
     @api.depends("line_id.type")
@@ -73,6 +71,7 @@ class ReplaceMilestoneItemWizard(models.TransientModel):
                 "pricelist_id": line.pricelist_id.id,
                 "manual_product_cost": line.manual_product_cost,
                 "margin": line.margin,
+                "unit_price": line.unit_price,
             })
         return vals
 
@@ -98,26 +97,38 @@ class ReplaceMilestoneItemWizard(models.TransientModel):
             partner=self._get_partner(),
         )
 
-    @api.depends("new_product_id", "qty", "pricing_method", "pricelist_id", "manual_product_cost", "margin")
+    def _get_calculated_unit_price(self):
+        self.ensure_one()
+        if self.pricing_method == "pricelist":
+            return (self._get_pricelist_price() or 0.0) * (self.qty or 0.0)
+
+        return (
+            (self.manual_product_cost or 0.0)
+            * (self.qty or 0.0)
+            * (1 + ((self.margin or 0.0) / 100))
+        )
+
+    @api.depends("new_product_id", "qty", "pricing_method", "pricelist_id")
     def _compute_prices(self):
         for wizard in self:
             if wizard.pricing_method == "pricelist":
                 price = wizard._get_pricelist_price()
                 wizard.pricelist_sale_price = price
-                wizard.unit_price = price * (wizard.qty or 0.0)
             else:
                 wizard.pricelist_sale_price = 0.0
-                wizard.unit_price = (
-                    (wizard.manual_product_cost or 0.0)
-                    * (wizard.qty or 0.0)
-                    * (1 + ((wizard.margin or 0.0) / 100))
-                )
 
     @api.onchange("new_product_id")
     def _onchange_new_product_id(self):
         for wizard in self:
             if wizard.new_product_id:
                 wizard.manual_product_cost = wizard._get_product_cost(wizard.new_product_id)
+            wizard.unit_price = wizard._get_calculated_unit_price()
+
+    @api.onchange("qty", "pricing_method", "pricelist_id", "manual_product_cost", "margin")
+    def _onchange_price_inputs(self):
+        for wizard in self:
+            wizard._compute_prices()
+            wizard.unit_price = wizard._get_calculated_unit_price()
 
     @api.onchange("pricing_method")
     def _onchange_pricing_method(self):
@@ -129,6 +140,35 @@ class ReplaceMilestoneItemWizard(models.TransientModel):
                     if partner and partner.property_product_pricelist
                     else self.env["product.pricelist"].search([], limit=1)
                 )
+            wizard._compute_prices()
+            wizard.unit_price = wizard._get_calculated_unit_price()
+
+    def _get_pricing_vals_matching_unit_price(self, new_product, qty):
+        self.ensure_one()
+        unit_price = self.unit_price or 0.0
+        expected_unit_price = self._get_calculated_unit_price()
+        pricing_method = self.pricing_method
+        pricelist_id = self.pricelist_id.id
+        manual_product_cost = self.manual_product_cost
+        margin = self.margin
+
+        if abs(unit_price - expected_unit_price) > 0.0001:
+            pricing_method = "margin"
+            pricelist_id = False
+            manual_product_cost = manual_product_cost or self._get_product_cost(new_product)
+            base_amount = (manual_product_cost or 0.0) * (qty or 0.0)
+            if base_amount:
+                margin = ((unit_price / base_amount) - 1) * 100
+            else:
+                manual_product_cost = unit_price / (qty or 1.0)
+                margin = 0.0
+
+        return {
+            "pricing_method": pricing_method,
+            "pricelist_id": pricelist_id,
+            "manual_product_cost": manual_product_cost,
+            "margin": margin,
+        }
 
     def _find_sale_order_line(self):
         self.ensure_one()
@@ -181,17 +221,15 @@ class ReplaceMilestoneItemWizard(models.TransientModel):
         sale_order_line = self._find_sale_order_line()
         source_line = self._find_source_line()
 
+        pricing_vals = self._get_pricing_vals_matching_unit_price(new_product, qty)
         vals = {
             "product_id": new_product.id,
             "qty": qty,
-            "pricing_method": self.pricing_method,
-            "pricelist_id": self.pricelist_id.id,
-            "manual_product_cost": self.manual_product_cost,
             "manual_product_sale_price": new_product.list_price,
-            "margin": self.margin,
             "replace_item": False,
             "line_update_state": "replaced",
         }
+        vals.update(pricing_vals)
         line.write(vals)
         if source_line:
             source_line.write(vals)
@@ -222,4 +260,4 @@ class ReplaceMilestoneItemWizard(models.TransientModel):
         if sale_order.opportunity_id:
             sale_order.opportunity_id.message_post(body=body)
 
-        return {"type": "ir.actions.act_window_close"}
+        return {"type": "ir.actions.client", "tag": "reload"}

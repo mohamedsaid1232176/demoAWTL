@@ -42,6 +42,11 @@ class SaleMostakhlasLine(models.Model):
     name = fields.Text(string="الوصف")
 
     product_qty = fields.Float(string="الكمية", default=1.0)
+    delivery = fields.Float(
+        string="Delivery",
+        compute="_compute_delivery",
+        store=True,
+    )
     product_uom = fields.Many2one("uom.uom", string="وحدة القياس")
     price_unit = fields.Float(string="سعر الوحدة", default=0.0)
     discount = fields.Float(string="الخصم %")
@@ -62,23 +67,8 @@ class SaleMostakhlasLine(models.Model):
 
     # نسبة الإنجاز في هذا المستخلص
     progress_percent = fields.Float(string="نسبة الإنجاز الحالية (%)", default=0.0)
-    # إجمالي الإنجاز التراكمي بعد هذا المستخلص
-    done_progress = fields.Float(string="إجمالي الإنجاز (%)", default=0.0)
-
-    # نسبة الإنجاز قبل هذا المستخلص = done_progress - progress_percent
-    previous_progress = fields.Float(
-        string="نسبة الإنجاز السابقة (%)",
-        compute="_compute_previous_progress",
-        store=False,
-    )
-
-    @api.depends("done_progress", "progress_percent")
-    def _compute_previous_progress(self):
-        for line in self:
-            line.previous_progress = max(
-                0.0,
-                (line.done_progress or 0.0) - (line.progress_percent or 0.0),
-            )
+    # إجمالي نسب الإنجاز التي تم استخراجها لهذا السطر
+    done_progress = fields.Float(string="Progress Done (%)", default=0.0)
 
     is_progress_locked = fields.Boolean(
         compute="_compute_is_progress_locked", store=False
@@ -87,7 +77,12 @@ class SaleMostakhlasLine(models.Model):
     @api.depends("done_progress")
     def _compute_is_progress_locked(self):
         for line in self:
-            line.is_progress_locked = line.done_progress >= 100
+            line.is_progress_locked = (line.done_progress or 0.0) >= 100.0
+
+    @api.depends("sale_line_id.qty_delivered")
+    def _compute_delivery(self):
+        for line in self:
+            line.delivery = line.sale_line_id.qty_delivered if line.sale_line_id else 0.0
 
     @api.depends("product_qty", "price_unit", "discount")
     def _compute_price_subtotal(self):

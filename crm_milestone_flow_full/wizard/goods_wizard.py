@@ -29,4 +29,3 @@ class GoodsWizard(models.TransientModel):
         group = self.env["crm.milestone.group"].browse(self.env.context.get("default_group_idx"))
         group.add_products_from_selector(self.product_ids, "goods")
         return {'type': 'ir.actions.act_window_close'}
-

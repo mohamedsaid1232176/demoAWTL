@@ -21,7 +21,7 @@
                         string="Move to Technical Office"
                         icon="fa-level-up"
                         context="{'default_action_type': 'technical'}"
-                        invisible="not show_proposition_button or not (is_stage_new or is_stage_designer)"/>
+                        invisible="not show_proposition_button or is_stage_technical"/>
 
 
                 <!-- 🔹 Projects Management -->
@@ -30,7 +30,7 @@
                         string="Move to Projects Management"
                         icon="fa-level-up"
                         context="{'default_action_type': 'project'}"
-                        invisible="not show_button_allowed"/>
+                        invisible="not show_button_allowed or is_stage_project_management"/>
 
 
                 <!-- 🔹 Designer (بقى wizard زيهم 🔥) -->

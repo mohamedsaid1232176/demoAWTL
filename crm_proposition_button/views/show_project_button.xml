@@ -5,14 +5,14 @@
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
 
-            <!-- إضافة Tab جديد -->
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="Project Settings">
-                    <group>
-                        <field name="show_project_button"/>
-                        <field name="show_move_to_designer"/>
-                        <field name="show_move_to_proposition"/>
-
+                    <group string="CRM Stage Buttons" col="2">
+                        <group>
+                            <field name="show_project_button"/>
+                            <field name="show_move_to_designer"/>
+                            <field name="show_move_to_proposition"/>
+                        </group>
                     </group>
                 </page>
             </xpath>

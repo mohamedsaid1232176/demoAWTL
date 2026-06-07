@@ -57,6 +57,31 @@ class ResUsers(models.Model):
 
     can_see_all_records = fields.Boolean(string="Can See All Records")
 
+    show_project_management_app = fields.Boolean(
+        string="Show Projects Management App",
+        compute="_compute_show_project_management_app",
+        inverse="_inverse_show_project_management_app",
+        store=False,
+    )
+
+    def _get_project_management_group(self):
+        return self.env.ref("project_management_app.group_project_management_app", raise_if_not_found=False)
+
+    def _compute_show_project_management_app(self):
+        group = self._get_project_management_group()
+        for user in self:
+            user.show_project_management_app = bool(group and group in user.groups_id)
+
+    def _inverse_show_project_management_app(self):
+        group = self._get_project_management_group()
+        if not group:
+            return
+        for user in self:
+            if user.show_project_management_app:
+                user.groups_id = [(4, group.id)]
+            else:
+                user.groups_id = [(3, group.id)]
+
 
 class CrmLead(models.Model):
     _inherit = "crm.lead"

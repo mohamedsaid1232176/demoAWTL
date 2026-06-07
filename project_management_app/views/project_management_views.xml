@@ -50,7 +50,10 @@
     <!-- MENUS -->
     <!-- ========================================================= -->
 
-    <menuitem id="menu_project_management_root" name="Projects Management" sequence="1"/>
+    <menuitem id="menu_project_management_root"
+              name="Projects Management"
+              sequence="1"
+              groups="project_management_app.group_project_management_app"/>
 
     <menuitem id="menu_project_management_designer"
               name="Designer"
@@ -121,7 +124,7 @@
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
 
-            <xpath expr="//form[@class='o_lead_opportunity_form']//header//button[@name='404']"
+            <xpath expr="//form[@class='o_lead_opportunity_form']//header//button[@name='%(crm.crm_lead_lost_action)d']"
                    position="attributes">
                 <attribute name="invisible">hide_all_buttons_pm</attribute>
             </xpath>

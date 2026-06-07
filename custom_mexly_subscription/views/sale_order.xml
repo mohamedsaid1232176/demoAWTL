@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_subscription_order_view_form_inherit_start_date_final" model="ir.ui.view">
+        <field name="name">sale.subscription.order.form.inherit.start.date.final</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_subscription.sale_subscription_order_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//group[@name='subscription_info']" position="replace"/>
+
+            <xpath expr="//field[@name='next_invoice_date'][1]" position="before">
+
+                <field name="start_date"
+                       groups="!sales_team.group_sale_manager"
+                       readonly="subscription_state in ['2_renewal', '3_progress', '4_paused']"
+                       invisible="not is_subscription"/>
+
+                <field name="start_date"
+                       groups="sales_team.group_sale_manager"
+                       readonly="subscription_state == '2_renewal'"
+                       invisible="not is_subscription"/>
+
+            </xpath>
+
+            <xpath expr="//field[@name='next_invoice_date']" position="after">
+                <field name="subscription_duration" invisible="not is_company_subscription"/>
+                <field name="total_value" invisible="not is_company_subscription"/>
+                <field name="building_product_id" invisible="not is_company_subscription"/>
+            </xpath>
+            <xpath expr="//button[@id='create_invoice']" position="attributes">
+                <attribute name="invisible">(not is_subscription and invoice_status != 'to invoice') or (is_subscription and (state != 'sale' or next_invoice_date &gt; current_date)) or is_company_subscription</attribute>
+            </xpath>
+           
+            <xpath expr="//button[@id='create_invoice']" position="after">
+                <button name="action_generate_one_product_invoices" type="object" string="Generate Invoice" class="oe_highlight" invisible="not is_company_subscription or invoices_generated or state == 'draft'"/>     
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="readonly">is_company_subscription</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_sale_order_form_inherit_wizard_button" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.wizard.button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='partner_id']" position="after">
+            <field name="is_multi_product" invisible="not is_company_subscription"/>
+        </xpath>
+      
+        <xpath expr="//field[@name='order_line']" position="before">
+            <div class="o_row">
+                <button
+                    name="action_open_one_product_wizard"
+                    type="object"
+                    string="Add One Product"
+                    invisible="is_multi_product or not is_company_subscription or state == 'sale'"
+                    class="btn btn-secondary btn-sm me-2"/>
+                
+                <button
+                    name="action_open_multi_product_wizard"
+                    type="object"
+                    string="Add Multiple Products"
+                    invisible="not is_multi_product or not is_company_subscription or state == 'sale'"
+                    class="btn btn-secondary btn-sm"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//page[@name='other_information']" position="after">
+
+                <page string="Contract Info" name="contract_info" invisible="not is_company_subscription">
+                    <group>
+                        <group string="بيانات العقد">
+
+                            <field name="main_contract_number"/>
+                            <field name="contract_number"/>
+                            <field name="contract_type"/>
+                            <field name="contract_sealing_date"/>
+                            <field name="contract_sealing_city"/>
+                        </group>
+
+                        <group string="بيانات المؤجر">
+
+                            <field name="organization_type"/>
+                            <field name="unified_number"/>
+                            <field name="cr_date"/>
+                            <field name="issued_by"/>
+
+                        </group>
+
+                        <group string="بيانات ممثل المؤجر">
+                            <field name="lessor_representative_id"/>
+                            <field name="nationality"/>
+                            <field name="nationality_type_id"/>
+                            <field name="mobile_number"/>
+                            <field name="email_address"/>
+                            <field name="id_number"/>
+                            <field name="id_number_attachment"/>
+                        </group>
+
+                        <group string="بيانات المستأجر">
+                            <field name="tenancy_customer_id"/>
+                            <field name="tenancy_nationality"/>
+                            <field name="tenancy_id_type_id"/>
+                            <field name="tenancy_mobile_number"/>
+                            <field name="tenancy_email_address"/>
+                            <field name="tenancy_id_number"/>
+                            <field name="tenancy_id_number_attachment"/>
+                        </group>
+
+                        <group string="بينات منشأة الوساطة العقارية">
+
+                        <field name="broker_entity"/>
+                        <field name="brokerage_entity_name"/>
+                        <field name="brokerage_entity_address"/>
+                        <field name="cr_entity_no"/>
+                        <field name="fax_number"/>
+                        <field name="broker_name"/>
+                        <field name="broker_nationality"/>
+                        <field name="broker_id_type_id"/>
+                        <field name="broker_id_number"/>
+                        <field name="broker_mobile_number"/>
+                        <field name="broker_email_address"/>
+                            
+                        </group>
+
+                        <group string="بيانات مستندات الملكية" >
+                            <field name="title_deed_no"/>
+                            <field name="issuer"/>
+                            <field name="issue_date"/>
+                            <field name="place_of_issue"/>
+                            <field name="title_deed_type"/>
+
+                        </group>
+
+                        <group string="بينات العقار">
+                            <field name="national_address"/>
+                            <field name="location_description"/>
+                            <field name="property_usage"/>
+                            <field name="property_type"/>
+                            <field name="floor_no"/>
+                            <field name="elevators_no"/>
+                            <field name="units_no"/>
+                            <field name="parking_lots"/>
+                            
+                        </group>
+                        
+                       <group string="بيانات الوحدات الاجارية">
+
+                            <field name="unit_type"/>
+                            <field name="floor_number"/>
+                            <field name="room_type"/>
+                            <field name="unit_area"/>
+                            <field name="numbers"/>
+
+                            <field name="furnished"/>
+                            <field name="furnishing_status"/>
+                            <field name="kitchen_cabinets"/>
+                            <field name="ac_units"/>
+
+                            <field name="electricity_meter_number"/>
+                            <field name="current_meter_read_electricity"/>
+
+                            <field name="water_meter_number"/>
+                            <field name="current_meter_read_water"/>
+
+                            <field name="gas_meter_number"/>
+                            <field name="current_meter_read_gas"/>
+
+                        </group>
+
+                    </group>
+                </page>
+
+            </xpath>
+
+
+        </field>
+    </record>
+
+</odoo>

@@ -582,15 +582,14 @@
                                         <thead>
                                             <tr>
                                                 <th style="width:4%">#</th>
-                                                <th style="width:18%; text-align:right;">البند</th>
-                                                <th style="width:6%">الوحدة</th>
-                                                <th style="width:7%">كمية العقد</th>
-                                                <th style="width:7%">سعر الوحدة</th>
-                                                <th style="width:9%">إجمالي العقد</th>
-                                                <th style="width:12%">نسبة سابقة</th>
-                                                <th style="width:12%">النسبة الحالية</th>
-                                                <th style="width:12%">القيمة المنفذة</th>
-                                                <th style="width:13%">ملاحظات</th>
+                                                <th style="width:26%; text-align:right;">البند</th>
+                                                <th style="width:7%">الوحدة</th>
+                                                <th style="width:8%">كمية العقد</th>
+                                                <th style="width:8%">سعر الوحدة</th>
+                                                <th style="width:10%">إجمالي العقد</th>
+                                                <th style="width:13%">النسبة الحالية</th>
+                                                <th style="width:14%">القيمة المنفذة</th>
+                                                <th style="width:14%">ملاحظات</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -598,11 +597,9 @@
                                             <t t-foreach="buffer" t-as="b">
                                                 <t t-set="l" t-value="b.line_id"/>
                                                 <t t-set="curr_pct" t-value="l.progress_percent or 0"/>
-                                                <t t-set="done_pct" t-value="l.done_progress or 0"/>
-                                                <t t-set="prev_pct" t-value="max(0.0, done_pct - curr_pct)"/>
+                                                <t t-set="done_pct" t-value="curr_pct"/>
                                                 <t t-set="contract_tot" t-value="(l.product_qty or 0) * (l.price_unit or 0)"/>
                                                 <t t-set="exec_val" t-value="contract_tot * (done_pct / 100.0)"/>
-                                                <t t-set="pw" t-value="str(int(min(prev_pct, 100)))"/>
                                                 <t t-set="cw" t-value="str(int(min(curr_pct, 100)))"/>
                                                 <tr>
                                                     <td class="number-cell"><t t-esc="l.sequence_int"/></td>
@@ -611,12 +608,6 @@
                                                     <td class="number-cell"><t t-esc="'%.2f' % (l.product_qty or 0)"/></td>
                                                     <td class="number-cell"><t t-esc="'%.2f' % (l.price_unit or 0)"/></td>
                                                     <td class="number-cell"><t t-esc="'%.2f' % contract_tot"/></td>
-                                                    <td>
-                                                        <div class="progress-wrapper">
-                                                            <div class="progress-bg"><div class="progress-gold" t-att-style="'width:' + pw + '%'"></div></div>
-                                                            <span class="progress-text gold-text"><t t-esc="'%.1f' % prev_pct"/>%</span>
-                                                        </div>
-                                                    </td>
                                                     <td>
                                                         <div class="progress-wrapper">
                                                             <div class="progress-bg"><div class="progress-green" t-att-style="'width:' + cw + '%'"></div></div>

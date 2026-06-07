@@ -1,0 +1,682 @@
+<odoo>
+
+    <record id="report_product_dashboard" model="ir.actions.report">
+        <field name="name">Product Dashboard Report</field>
+        <field name="model">product.list.dashboard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_mexly_subscription.product_dashboard_template</field>
+        <field name="report_file">custom_mexly_subscription.product_dashboard_template</field>
+        <field name="print_report_name">'Dashboard Report'</field>
+    </record>
+
+    <template id="product_dashboard_template">
+
+        <t t-call="web.external_layout">
+
+            <main style="
+            max-width:950px;
+            margin:auto;
+            padding:35px;
+            background:#f1f5f9;
+            font-family:'Segoe UI', sans-serif;
+        ">
+
+                <t t-foreach="docs" t-as="o">
+
+                    <!-- 🔥 HEADER -->
+                    <div style="text-align:center; margin-bottom:40px;">
+
+                        <div style="
+                        font-size:30px;
+                        font-weight:800;
+                        color:#0f172a;
+                    ">
+                            📊 Financial Products Dashboard
+                        </div>
+
+                        <div style="
+                        font-size:14px;
+                        color:#475569;
+                        margin-top:6px;
+                    ">
+                            Revenue • Cost • Performance Insights
+                        </div>
+
+                        <div style="
+                        width:60px;
+                        height:3px;
+                        background:#2563eb;
+                        margin:12px auto;
+                        border-radius:10px;
+                    "></div>
+
+                        <div style="
+                        font-size:12px;
+                        color:#94a3b8;
+                    ">
+                            Generated on:
+                            <t t-esc="time.strftime('%d %B %Y')"/>
+                        </div>
+
+                    </div>
+
+
+                    <!-- 🔥 CARDS (NO BORDER / CLEAN) -->
+                    <table style="
+    width:100%;
+    margin-bottom:35px;
+    border:none;
+    border-collapse:separate;
+">
+                        <tr>
+
+                            <!-- Revenue -->
+                            <td style="width:50%; padding:10px; border:none;">
+                                <div style="
+                background:#2563eb;
+                border-radius:20px;
+                padding:30px;
+                color:white;
+                text-align:center;
+                box-shadow:0 15px 35px rgba(37,99,235,0.25);
+            ">
+                                    <div style="font-size:26px;">📈</div>
+
+                                    <div style="
+    font-size:14px;
+    color:#ffffff;
+    font-weight:500;
+    margin-top:6px;
+">
+                                        Total Revenue
+                                    </div>
+
+                                    <div style="font-size:34px; font-weight:700; margin-top:10px;">
+                                        <t t-esc="o.total_revenue"
+                                           t-options='{"widget": "monetary", "display_currency": o.env.company.currency_id, "precision": 2}'/>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Cost -->
+                            <td style="width:50%; padding:10px; border:none;">
+                                <div style="
+                background:#ef4444;
+                border-radius:20px;
+                padding:30px;
+                color:white;
+                text-align:center;
+                box-shadow:0 15px 35px rgba(239,68,68,0.25);
+            ">
+                                    <div style="font-size:26px;">💰</div>
+
+                                    <div style="
+    font-size:14px;
+    color:#ffffff;
+    font-weight:500;
+    margin-top:6px;
+">
+                                        Total Cost
+                                    </div>
+
+                                    <div style="font-size:34px; font-weight:700; margin-top:10px;">
+                                        <t t-esc="o.total_cost"
+                                           t-options='{"widget": "monetary", "display_currency": o.env.company.currency_id, "precision": 2}'/>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+
+                    <!-- 🔥 TABLE -->
+                    <table style="
+                    width:100%;
+                    border-collapse:collapse;
+                    font-size:13px;
+                    background:white;
+                    border-radius:16px;
+                    overflow:hidden;
+                ">
+
+                        <thead>
+                            <tr style="
+                            background:#0f172a;
+                            color:white;
+                            font-weight:600;
+                        ">
+                                <th style="padding:14px; text-align:left;">Product</th>
+                                <th style="padding:14px; text-align:center;">Revenue</th>
+                                <th style="padding:14px; text-align:center;">Cost</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <t t-foreach="o.line_ids" t-as="l">
+
+                                <tr style="border-bottom:1px solid #f1f5f9;">
+
+                                    <td style="
+                                    padding:14px;
+                                    color:#334155;
+                                    font-weight:500;
+                                ">
+                                        <t t-esc="l.name"/>
+                                    </td>
+
+                                    <td style="
+                                    padding:14px;
+                                    text-align:center;
+                                    color:#16a34a;
+                                    font-weight:600;
+                                ">
+                                        <t t-esc="l.total_revenue"
+                                           t-options='{"widget": "monetary", "display_currency": o.env.company.currency_id, "precision": 2}'/>
+                                    </td>
+
+                                    <td style="
+                                    padding:14px;
+                                    text-align:center;
+                                    color:#ef4444;
+                                ">
+                                        <t t-esc="l.standard_price"
+                                           t-options='{"widget": "monetary", "display_currency": o.env.company.currency_id, "precision": 2}'/>
+                                    </td>
+
+                                </tr>
+
+                            </t>
+
+                        </tbody>
+
+                    </table>
+
+
+                    <!-- 🔥 FOOTER (MODERN) -->
+                    <div style="
+                    text-align:center;
+                    margin-top:45px;
+                    font-size:14px;
+                    color:#94a3b8;
+                    letter-spacing:0.5px;
+                ">
+                        — Powered by intelligent insights And modern analytics —
+                    </div>
+
+                </t>
+
+            </main>
+
+        </t>
+
+    </template>
+
+
+    <!-- report all page-->
+
+
+    <record id="report_subscription_full" model="ir.actions.report">
+        <field name="name">Full Subscription Report</field>
+        <field name="model">subscription.dashboard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_mexly_subscription.subscription_full_template</field>
+        <field name="report_file">custom_mexly_subscription.subscription_full_template</field>
+    </record>
+
+    <template id="subscription_full_template">
+
+        <t t-call="web.external_layout">
+
+            <main style="
+    padding:40px;
+    font-family:'Segoe UI', sans-serif;
+    background:#f1f5f9;
+">
+
+                <t t-foreach="docs" t-as="o">
+
+                    <div style="
+    text-align:center;
+    margin-bottom:40px;
+    padding-bottom:15px;
+    border-bottom:1px solid #e5e7eb;
+">
+
+                        <!-- Title -->
+                        <div style="
+        font-size:34px;
+        font-weight:800;
+        color:#0f172a;
+        letter-spacing:1px;
+    ">
+                            Subscription Analytics Report
+                        </div>
+                        <!-- Company Name -->
+                        <div style="
+    display:inline-block;
+    font-size:20px;
+    font-weight:800;
+    color:#3b82f6;
+    margin-top:10px;
+    padding:6px 18px;
+    border-radius:999px;
+    letter-spacing:2px;
+    background:rgba(59,130,246,0.08);
+    border:1px solid rgba(59,130,246,0.25);
+">
+                            SHAD
+                        </div>
+                        <!-- Subtitle -->
+                        <div style="
+        font-size:14px;
+        color:#64748b;
+        margin-top:6px;
+        letter-spacing:0.5px;
+    ">
+                            Insights And performance overview of your subscriptions
+                        </div>
+
+                        <!-- Divider -->
+                        <div style="
+        width:80px;
+        height:4px;
+        background:#3b82f6;
+        margin:15px auto;
+        border-radius:10px;
+        box-shadow:0 4px 10px rgba(59,130,246,0.3);
+    ">
+                        </div>
+
+                        <!-- Generate Date -->
+                        <div style="
+        font-size:13px;
+        color:#94a3b8;
+        margin-top:5px;
+    ">
+                            Generated on:
+                            <span style="font-weight:600; color:#0f172a;">
+                                <t t-esc="time.strftime('%d %B %Y')"/>
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- ========================= -->
+                    <!-- USED -->
+                    <!-- ========================= -->
+
+                    <h2 style="
+                        text-align:center;
+                        font-size:24px;
+                        font-weight:800;
+                        margin:40px 0 25px;
+                        color:#1e3a8a;
+                        letter-spacing:1.5px;
+                    ">
+
+                        ✦ used Units Overview ✦
+                        <div style="
+                            width:120px;
+                            height:5px;
+                            background:#3b82f6;
+                            margin:10px auto 0;
+                            border-radius:50px;
+                            box-shadow:0 4px 10px rgba(59,130,246,0.3);
+                        "></div>
+
+                        <div style="
+                            width:50px;
+                            height:4px;
+                            background:#0f172a;
+                            margin:6px auto 0;
+                            border-radius:50px;
+                            opacity:0.5;
+                        "></div>
+
+                    </h2>
+
+
+                    <table style="width:100%; border-collapse:separate; border-spacing:15px;">
+                        <tr>
+
+                            <td>
+                                <div style="background:#38bdf8; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                    Building
+                                    <h1>
+                                        <t t-esc="o.building_count"/>
+                                    </h1>
+                                    <small>Cost:
+                                        <t t-esc="round(o.building_cost, 2)"/>
+                                    </small>
+                                    <br/>
+                                    <small>Revenue:
+                                        <t t-esc="o.building_revenue"/>
+                                    </small>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="background:#22c55e; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                    Room
+                                    <h1>
+                                        <t t-esc="o.room_count"/>
+                                    </h1>
+                                    <small>Cost:
+                                        <t t-esc="round(o.room_cost, 2)"/>
+                                    </small>
+                                    <br/>
+                                    <small>Revenue:
+                                        <t t-esc="o.room_revenue"/>
+                                    </small>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="background:#f59e0b; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                    Bed
+                                    <h1>
+                                        <t t-esc="o.bed_count"/>
+                                    </h1>
+                                    <small>Cost:
+                                        <t t-esc="round(o.bed_cost, 2)"/>
+                                    </small>
+                                    <br/>
+                                    <small>Revenue:
+                                        <t t-esc="o.bed_revenue"/>
+                                    </small>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="background:#f43f5e; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                    Service
+                                    <h1>
+                                        <t t-esc="o.service_count"/>
+                                    </h1>
+                                    <small>Cost:
+                                        <t t-esc="round(o.service_cost, 2)"/>
+                                    </small>
+                                    <br/>
+                                    <small>Revenue:
+                                        <t t-esc="o.service_revenue"/>
+                                    </small>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                    <t t-set="total_cost"
+                       t-value="round(o.building_cost + o.room_cost + o.bed_cost + o.service_cost, 2)"/>
+                    <t t-set="total_revenue"
+                       t-value="round(o.building_revenue + o.room_revenue + o.bed_revenue + o.service_revenue, 2)"/>
+                    <!-- 🔥 TABLE MODERN -->
+                    <table style="
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    margin-top:15px;
+">
+
+                        <thead style="background:#0f172a; color:white;">
+                            <tr>
+                                <th style="padding:12px;">Category</th>
+                                <th style="padding:12px;">Count</th>
+                                <th style="padding:12px;">Cost</th>
+                                <th style="padding:12px; text-align:center; color:#22c55e;">
+                                    Revenue
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr style="background:#f8fafc;">
+                                <td style="padding:12px; text-align:center;">Building</td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="o.building_count"/>
+                                </td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="round(o.building_cost, 2)"/>
+                                </td>
+                                <td style="text-align:center; color:#16a34a; font-weight:600;">
+                                    <t t-esc="o.building_revenue"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:12px; text-align:center;">Room</td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="o.room_count"/>
+                                </td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="round(o.room_cost, 2)"/>
+                                </td>
+                                <td style="text-align:center; color:#16a34a; font-weight:600;">
+                                    <t t-esc="o.room_revenue"/>
+                                </td>
+                            </tr>
+
+                            <tr style="background:#f8fafc;">
+                                <td style="padding:12px; text-align:center;">Bed</td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="o.bed_count"/>
+                                </td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="round(o.bed_cost, 2)"/>
+                                </td>
+                                <td style="text-align:center; color:#16a34a; font-weight:600;">
+                                    <t t-esc="o.bed_revenue"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding:12px; text-align:center;">Service</td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="o.service_count"/>
+                                </td>
+                                <td style="padding:12px; text-align:center;">
+                                    <t t-esc="round(o.service_cost, 2)"/>
+                                </td>
+                                <td style="text-align:center; color:#16a34a; font-weight:600;">
+                                    <t t-esc="o.service_revenue"/>
+                                </td>
+                            </tr>
+                            <tr style="background:#e2e8f0; font-weight:700;">
+                                <td style="padding:12px; text-align:center;">Total</td>
+                                <td></td>
+
+                                <td style="text-align:center;">
+                                    <t t-esc="round(total_cost, 2)"/>
+                                </td>
+
+                                <td style="text-align:center; color:#16a34a;">
+                                    <t t-esc="round(total_revenue, 2)"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                    <br/>
+                    <br/>
+
+                    <!-- ========================= -->
+                    <!-- UNUSED -->
+                    <!-- ========================= -->
+                    <div style="page-break-inside: avoid;">
+
+                        <h2 style="
+                    text-align:center;
+                    font-size:24px;
+                    font-weight:800;
+                    margin:40px 0 25px;
+                    color:#1e3a8a;
+                    letter-spacing:1.5px;
+                ">
+
+                            ✦ Unused Units Overview ✦
+                            <div style="
+                        width:120px;
+                        height:5px;
+                        background:#3b82f6;
+                        margin:10px auto 0;
+                        border-radius:50px;
+                        box-shadow:0 4px 10px rgba(59,130,246,0.3);
+                    "></div>
+
+                            <div style="
+                        width:50px;
+                        height:4px;
+                        background:#0f172a;
+                        margin:6px auto 0;
+                        border-radius:50px;
+                        opacity:0.5;
+                    "></div>
+
+                        </h2>
+
+                        <table style="width:100%; border-collapse:separate; border-spacing:15px;">
+                            <tr>
+
+                                <td>
+                                    <div style="background:#38bdf8; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                        Building
+                                        <h1>
+                                            <t t-esc="o.unused_building_count"/>
+                                        </h1>
+                                        <small>Cost:
+                                            <t t-esc="round(o.unused_building_cost, 2)"/>
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div style="background:#22c55e; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                        Room
+                                        <h1>
+                                            <t t-esc="o.unused_room_count"/>
+                                        </h1>
+                                        <small>Cost:
+                                            <t t-esc="round(o.unused_room_cost, 2)"/>
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div style="background:#f59e0b; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                        Bed
+                                        <h1>
+                                            <t t-esc="o.unused_bed_count"/>
+                                        </h1>
+                                        <small>Cost:
+                                            <t t-esc="round(o.unused_bed_cost, 2)"/>
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div style="background:#f43f5e; padding:25px; border-radius:16px; text-align:center; color:white; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+                                        Service
+                                        <h1>
+                                            <t t-esc="o.unused_service_count"/>
+                                        </h1>
+                                        <small>Cost:
+                                            <t t-esc="round(o.unused_service_cost, 2)"/>
+                                        </small>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </table>
+
+
+                        <t t-set="unused_total_cost"
+                           t-value="round(o.unused_building_cost + o.unused_room_cost + o.unused_bed_cost + o.unused_service_cost, 2)"/>
+                        <!-- TABLE -->
+                        <table style="
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:16px;
+    overflow:hidden;
+">
+
+                            <thead style="background:#0f172a; color:white;">
+                                <tr>
+                                    <th style="padding:12px;">Category</th>
+                                    <th style="padding:12px;">Count</th>
+                                    <th style="padding:12px;">Cost</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr style="background:#f8fafc;">
+                                    <td style="padding:12px; text-align:center;">Building</td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="o.unused_building_count"/>
+                                    </td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="round(o.unused_building_cost, 2)"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px; text-align:center;">Room</td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="o.unused_room_count"/>
+                                    </td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="round(o.unused_room_cost, 2)"/>
+                                    </td>
+                                </tr>
+
+                                <tr style="background:#f8fafc;">
+                                    <td style="padding:12px; text-align:center;">Bed</td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="o.unused_bed_count"/>
+                                    </td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="round(o.unused_bed_cost, 2)"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px; text-align:center;">Service</td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="o.unused_service_count"/>
+                                    </td>
+                                    <td style="padding:12px; text-align:center;">
+                                        <t t-esc="round(o.unused_service_cost, 2)"/>
+                                    </td>
+                                </tr>
+                                <tr style="background:#e2e8f0; font-weight:700;">
+                                    <td style="padding:12px; text-align:center;">Total</td>
+                                    <td></td>
+
+                                    <td style="text-align:center;">
+                                        <t t-esc="unused_total_cost"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!-- 🔥 FOOTER -->
+                    <div style="text-align:center; margin-top:40px; color:#94a3b8;">
+                        Professional • Clean • Modern Report
+                    </div>
+
+                </t>
+
+            </main>
+        </t>
+
+    </template>
+</odoo>

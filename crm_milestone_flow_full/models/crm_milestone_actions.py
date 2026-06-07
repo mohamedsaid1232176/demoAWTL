@@ -20,6 +20,45 @@ class ProjectMilestone(models.Model):
     )
 
 
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
+
+    line_update_state = fields.Selection(
+        [
+            ("from_pipeline", "📌 Added from Pipeline"),
+            ("replaced", "🔁 Modified by Replace"),
+            ("added_sale_order", "✨ New from Sales Order"),
+        ],
+        string="Line Status",
+        compute="_compute_line_update_state",
+        store=False,
+    )
+
+    def _compute_line_update_state(self):
+        status_by_sale_line = {}
+        milestone_lines = self.env["crm.milestone.line"].search(
+            [("sale_order_line_id", "in", self.ids)],
+            order="id desc",
+        )
+        for milestone_line in milestone_lines:
+            sale_line_id = milestone_line.sale_order_line_id.id
+            if sale_line_id not in status_by_sale_line:
+                status_by_sale_line[sale_line_id] = milestone_line.line_update_state
+
+        for line in self:
+            line.line_update_state = status_by_sale_line.get(line.id, False)
+
+
+class ResUsers(models.Model):
+    _inherit = "res.users"
+
+    allow_multiple_milestone_quotations = fields.Boolean(
+        string="Allow Multiple Quotations",
+        default=False,
+        help="Allow this user to generate milestone/final product quotations more than once.",
+    )
+
+
 # -----------------------------
 # CRM Lead
 # -----------------------------
@@ -47,7 +86,7 @@ class CrmLead(models.Model):
         #         }
         #     }
         # منع تكرار إنشاء Quotation نهائياً
-        if self.is_milestone_quotation_generated:
+        if self.is_milestone_quotation_generated and not self.env.user.allow_multiple_milestone_quotations:
             raise UserError("غير مسموح بإنشاء عرض سعر آخر — تم إنشاء عرض السعر بالفعل.")
 
         if not self.milestone_group_ids:
@@ -372,6 +411,7 @@ class SaleOrder(models.Model):
         for rec in self:
             rec.show_milestone_tab = (
                     rec.company_id.company_registry == ARKA_COMPANY_REGISTRY
+                    and rec.is_crm_custom_quotation
             )
 
     def action_confirm(self):

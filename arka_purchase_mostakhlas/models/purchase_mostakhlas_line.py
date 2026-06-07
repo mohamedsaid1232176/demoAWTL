@@ -6,18 +6,6 @@ class PurchaseMostakhlasLine(models.Model):
     _description = "Purchase Mostakhlas Line"
     _order = "sequence_int, id"
 
-
-    previous_progress = fields.Float(
-        string="Previous Progress (%)",
-        compute="_compute_previous_progress",
-        store=False
-    )
-
-    @api.depends("done_progress", "progress_percent")
-    def _compute_previous_progress(self):
-        for line in self:
-            line.previous_progress = (line.done_progress or 0.0) - (line.progress_percent or 0.0)
-
     progress_percent = fields.Float(
         string="Progress (%)",
         default=0.0
@@ -99,11 +87,10 @@ class PurchaseMostakhlasLine(models.Model):
 
     print_in_report = fields.Boolean(string="Print in Report", default=False)
     done_progress = fields.Float(
-        string=" Progress Done (%)",
+        string="Progress Done (%)",
         default=0.0
     )
 
-    # لو وصلت نسبة الإنجاز 100 → خلي progress_percent read-
     is_progress_locked = fields.Boolean(
         compute="_compute_is_progress_locked",
         store=False
@@ -112,7 +99,7 @@ class PurchaseMostakhlasLine(models.Model):
     @api.depends("done_progress")
     def _compute_is_progress_locked(self):
         for line in self:
-            line.is_progress_locked = line.done_progress >= 100
+            line.is_progress_locked = (line.done_progress or 0.0) >= 100.0
 
 
 class MostakhlasType(models.Model):
@@ -143,5 +130,3 @@ class MostakhlasPrintBuffer(models.Model):
 
     line_id = fields.Many2one("purchase.mostakhlas.line", required=True)
     order_id = fields.Many2one("purchase.order", required=True)
-
-

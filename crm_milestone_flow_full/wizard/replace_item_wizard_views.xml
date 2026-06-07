@@ -17,7 +17,7 @@
                     <field name="pricelist_sale_price" invisible="pricing_method != 'pricelist'" readonly="1"/>
                     <field name="manual_product_cost" invisible="pricing_method != 'margin'"/>
                     <field name="margin" invisible="pricing_method != 'margin'"/>
-                    <field name="unit_price" readonly="1"/>
+                    <field name="unit_price"/>
                 </group>
                 <footer>
                     <button name="action_confirm_replace"

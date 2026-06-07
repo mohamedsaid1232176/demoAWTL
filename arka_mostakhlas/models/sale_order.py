@@ -175,7 +175,6 @@ class SaleOrder(models.Model):
 
     operations_manager = fields.Char(
         string="Operations Manager",
-        default="مصطفى شاهين",
     )
 
     # اسم العميل — محسوب من partner_id
@@ -244,7 +243,7 @@ class SaleOrder(models.Model):
             for line in lines:
                 qty = line.product_qty or 0.0
                 price = line.price_unit or 0.0
-                total_progress = (line.done_progress or 0.0) / 100.0
+                total_progress = (line.progress_percent or 0.0) / 100.0
                 line_untaxed = qty * price
                 exec_line = line_untaxed * total_progress
                 exec_untaxed += exec_line
@@ -295,36 +294,60 @@ class SaleOrder(models.Model):
     # ══════════════════════════════════════════════════
     def action_open_mostakhlas_tab(self):
         for order in self:
-            existing_sale_lines = set(order.mostakhlas_line_ids.mapped("sale_line_id").ids)
-            existing_unlinked_products = set(
-                order.mostakhlas_line_ids.filtered(
-                    lambda mostakhlas_line: not mostakhlas_line.sale_line_id
-                ).mapped("product_id").ids
+            delivered_lines = order.order_line.filtered(
+                lambda line: not line.display_type and (line.qty_delivered or 0.0) > 0.0
             )
-            seq = len(order.mostakhlas_line_ids)
-            new_vals = []
-            for line in order.order_line.filtered(lambda l: not l.display_type):
-                if line.id in existing_sale_lines:
-                    continue
-                if line.product_id.id in existing_unlinked_products:
-                    continue
-                seq += 1
-                new_vals.append({
-                    "order_id": order.id,
-                    "sale_line_id": line.id,
-                    "sequence_int": seq,
-                    "product_id": line.product_id.id,
-                    "name": line.name,
-                    "product_qty": line.product_uom_qty,
-                    "product_uom": line.product_uom.id,
-                    "price_unit": line.price_unit,
-                    "discount": line.discount,
-                    "taxes_id": [(6, 0, line.tax_id.ids)],
-                    "analytic_distribution": line.analytic_distribution,
-                })
-            if new_vals:
-                self.env["sale.mostakhlas.line"].create(new_vals)
+            order._add_mostakhlas_lines_from_sale_lines(delivered_lines)
             order.show_mostakhlas_tab = True
+        return True
+
+    def action_open_add_mostakhlas_line_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Add New Line"),
+            "res_model": "sale.mostakhlas.add.line.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_order_id": self.id},
+        }
+
+    def _prepare_mostakhlas_line_vals_from_sale_line(self, sale_line, sequence):
+        return {
+            "order_id": self.id,
+            "sale_line_id": sale_line.id,
+            "sequence_int": sequence,
+            "product_id": sale_line.product_id.id,
+            "name": sale_line.name,
+            "product_qty": sale_line.product_uom_qty,
+            "product_uom": sale_line.product_uom.id,
+            "price_unit": sale_line.price_unit,
+            "discount": sale_line.discount,
+            "taxes_id": [(6, 0, sale_line.tax_id.ids)],
+            "analytic_distribution": sale_line.analytic_distribution,
+        }
+
+    def _add_mostakhlas_lines_from_sale_lines(self, sale_lines):
+        self.ensure_one()
+        existing_sale_lines = set(self.mostakhlas_line_ids.mapped("sale_line_id").ids)
+        existing_unlinked_products = set(
+            self.mostakhlas_line_ids.filtered(
+                lambda mostakhlas_line: not mostakhlas_line.sale_line_id
+            ).mapped("product_id").ids
+        )
+        seq = len(self.mostakhlas_line_ids)
+        new_vals = []
+        for line in sale_lines.filtered(lambda sale_line: not sale_line.display_type):
+            if line.id in existing_sale_lines:
+                continue
+            if line.product_id.id in existing_unlinked_products:
+                continue
+            seq += 1
+            new_vals.append(
+                self._prepare_mostakhlas_line_vals_from_sale_line(line, seq)
+            )
+        if new_vals:
+            self.env["sale.mostakhlas.line"].create(new_vals)
         return True
 
     def _get_selected_mostakhlas_invoice_lines(self):
@@ -332,9 +355,7 @@ class SaleOrder(models.Model):
         selected = self.mostakhlas_line_ids.filtered(lambda line: line.print_in_report)
         if not selected:
             raise UserError(_("Please select at least one Mostakhlas line."))
-        invalid_lines = selected.filtered(lambda line: (line.progress_percent or 0.0) <= 0.0)
-        if invalid_lines:
-            raise UserError(_("Current Progress %% must be greater than 0 for selected lines."))
+        self._validate_mostakhlas_progress(selected)
         return selected
 
     def _find_mostakhlas_sale_line(self, mostakhlas_line):
@@ -384,11 +405,14 @@ class SaleOrder(models.Model):
     def _create_mostakhlas_proforma_invoice(self):
         self.ensure_one()
         selected = self._get_selected_mostakhlas_invoice_lines()
+        mostakhlas_number = self._next_sale_mostakhlas_number()
+        self._set_mostakhlas_print_buffer(selected)
 
         invoice_vals = self._prepare_invoice()
         invoice_vals.update({
             "move_type": "out_invoice",
             "is_sale_mostakhlas_proforma": True,
+            "is_mostakhlas_invoice": True,
             "mostakhlas_sale_order_id": self.id,
             "invoice_line_ids": [],
         })
@@ -404,6 +428,13 @@ class SaleOrder(models.Model):
             move_type="out_invoice",
             arka_mostakhlas_proforma=True,
         ).create(invoice_vals)
+        invoice._write_mostakhlas_snapshot(
+            self,
+            selected,
+            "arka_mostakhlas.action_report_sale_mostakhlas",
+            mostakhlas_number,
+        )
+        self._apply_mostakhlas_progress(selected)
         selected.write({"print_in_report": False})
         invoice.message_post_with_source(
             "mail.message_origin_link",
@@ -439,37 +470,15 @@ class SaleOrder(models.Model):
     #           PRINT MOSTAKHLAS
     # ══════════════════════════════════════════════════
     def action_print_sale_mostakhlas(self):
-        try:
-            num = int((self.mostakhlas_sequence or "SMO-0").replace("SMO-", "")) + 1
-        except Exception:
-            num = 1
-        self.mostakhlas_sequence = f"SMO-{num}"
-
         selected = self.mostakhlas_line_ids.filtered(lambda l: l.print_in_report)
         if not selected:
             raise ValidationError("Please select at least one line to print.")
+        self._validate_mostakhlas_progress(selected)
+        self._next_sale_mostakhlas_number()
 
-        for line in selected:
-            pct = line.progress_percent or 0.0
-            # if pct <= 0:
-            #     raise ValidationError(
-            #         f"Progress % for line {line.sequence_int} must be greater than 0."
-            #     )
-            new_done = (line.done_progress or 0.0) + pct
-            # if new_done > 100:
-            #     raise ValidationError(
-            #         f"Total progress for line {line.sequence_int} exceeds 100%."
-            #     )
-            line.done_progress = new_done
+        self._apply_mostakhlas_progress(selected)
 
-        self.env["sale.mostakhlas.print.buffer"].search(
-            [("order_id", "=", self.id)]
-        ).unlink()
-        for line in selected:
-            self.env["sale.mostakhlas.print.buffer"].create({
-                "order_id": self.id,
-                "line_id": line.id,
-            })
+        self._set_mostakhlas_print_buffer(selected)
 
         action = self.env.ref(
             "arka_mostakhlas.action_report_sale_mostakhlas"
@@ -484,6 +493,50 @@ class SaleOrder(models.Model):
         new_payments.write({"is_used_in_sale_mostakhlas": True})
 
         return action
+
+    def _next_sale_mostakhlas_number(self):
+        self.ensure_one()
+        try:
+            num = int((self.mostakhlas_sequence or "SMO-0").replace("SMO-", "")) + 1
+        except Exception:
+            num = 1
+        self.mostakhlas_sequence = f"SMO-{num}"
+        if not self.date_mostakhlas:
+            self.date_mostakhlas = fields.Date.context_today(self)
+        return self.mostakhlas_sequence
+
+    def _set_mostakhlas_print_buffer(self, selected_lines):
+        self.ensure_one()
+        self.env["sale.mostakhlas.print.buffer"].search(
+            [("order_id", "=", self.id)]
+        ).unlink()
+        for line in selected_lines:
+            self.env["sale.mostakhlas.print.buffer"].create({
+                "order_id": self.id,
+                "line_id": line.id,
+            })
+
+    def _validate_mostakhlas_progress(self, selected_lines):
+        for line in selected_lines:
+            pct = line.progress_percent or 0.0
+            current_done = line.done_progress or 0.0
+            if current_done >= 100.0:
+                raise ValidationError(
+                    f"Progress Done for line {line.sequence_int} is already 100%."
+                )
+            if pct <= 0.0:
+                raise ValidationError(
+                    f"Current Progress % for line {line.sequence_int} must be greater than 0."
+                )
+            if current_done + pct > 100.0:
+                remaining = max(0.0, 100.0 - current_done)
+                raise ValidationError(
+                    f"Current Progress % for line {line.sequence_int} cannot exceed remaining progress ({remaining:.2f}%)."
+                )
+
+    def _apply_mostakhlas_progress(self, selected_lines):
+        for line in selected_lines:
+            line.done_progress = (line.done_progress or 0.0) + (line.progress_percent or 0.0)
 
     # ══════════════════════════════════════════════════
     #              OPEN WIZARD

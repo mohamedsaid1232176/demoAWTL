@@ -189,11 +189,40 @@ class CrmMilestoneGroup(models.Model):
 
         if not subsection:
             total = self.total_goods_unit_price if line_type == "goods" else self.total_service_unit_price
+            insert_before_line = self.env["sale.order.line"]
+            if line_type == "goods":
+                insert_before_line = next(
+                    (
+                        order_line
+                        for order_line in group_lines
+                        if order_line.display_type == "line_section"
+                        and (order_line.name or "").startswith("Services")
+                    ),
+                    self.env["sale.order.line"],
+                )
+
+            if insert_before_line:
+                insert_sequence = insert_before_line.sequence
+                insert_before_index = ordered_lines.index(insert_before_line)
+                following_lines = self.env["sale.order.line"].browse(
+                    [line.id for line in ordered_lines[insert_before_index:]]
+                )
+            else:
+                insert_sequence = max([milestone_section.sequence] + [line.sequence for line in group_lines]) + 1
+                following_lines = lines.filtered(lambda line: line.sequence >= insert_sequence)
+                next_group_index = start_index + 1 + len(group_lines)
+                if next_group_index < len(ordered_lines) and insert_sequence >= ordered_lines[next_group_index].sequence:
+                    following_lines |= self.env["sale.order.line"].browse(
+                        [line.id for line in ordered_lines[next_group_index:]]
+                    )
+
+            for line in following_lines.sorted(lambda line: (line.sequence, line.id), reverse=True):
+                line.sequence += 10
             subsection = self.env["sale.order.line"].create({
                 "order_id": sale_order.id,
                 "name": f"{label} - Total Unit Price: {total or 0.0:.2f}",
                 "display_type": "line_section",
-                "sequence": milestone_section.sequence + 1,
+                "sequence": insert_sequence,
             })
         return subsection
 
@@ -250,16 +279,27 @@ class CrmMilestoneGroup(models.Model):
 
         subsection = self._get_sale_order_subsection(line_type)
         lines = sale_order.order_line.sorted(lambda line: (line.sequence, line.id))
-        after_subsection = lines.filtered(lambda line: line.sequence > subsection.sequence)
-        next_section = after_subsection.filtered("display_type")[:1]
-        section_lines = after_subsection.filtered(
-            lambda line: not next_section or line.sequence < next_section.sequence
-        )
+        ordered_lines = list(lines)
+        subsection_index = ordered_lines.index(subsection)
+        next_section = self.env["sale.order.line"]
+        section_lines = self.env["sale.order.line"]
+        for order_line in ordered_lines[subsection_index + 1:]:
+            if order_line.display_type:
+                next_section = order_line
+                break
+            section_lines |= order_line
         insert_sequence = max([subsection.sequence] + section_lines.mapped("sequence")) + 1
-        if next_section and insert_sequence >= next_section.sequence:
-            following_lines = lines.filtered(lambda line: line.sequence >= next_section.sequence)
-            for line in following_lines:
-                line.sequence += 10
+        following_lines = self.env["sale.order.line"]
+        if next_section:
+            next_section_index = ordered_lines.index(next_section)
+            if insert_sequence >= next_section.sequence:
+                following_lines = self.env["sale.order.line"].browse(
+                    [line.id for line in ordered_lines[next_section_index:]]
+                )
+        else:
+            following_lines = lines.filtered(lambda line: line.sequence >= insert_sequence)
+        for line in following_lines.sorted(lambda line: (line.sequence, line.id), reverse=True):
+            line.sequence += 10
 
         product = milestone_line.product_id
         qty = milestone_line.qty or 1.0
