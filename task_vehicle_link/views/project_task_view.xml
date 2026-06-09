@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_task_form_vehicle_tab" model="ir.ui.view">
+        <field name="name">project.task.form.vehicle.tab</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+
+            <header position="inside">
+
+                <!-- Request Spare Parts (يختفي بعد الإنشاء) -->
+                <button
+                        name="action_open_spare_parts_wizard"
+                        type="object"
+                        string="Request Spare Parts"
+                        class="oe_highlight"
+                        icon="fa-exchange"
+                        invisible="picking_id"
+                />
+                <button
+                        name="action_create_sales_order"
+                        type="object"
+                        string="Create Sales Order"
+                        class="oe_highlight"
+                        icon="fa-shopping-cart"
+                        invisible="sale_order_id"
+                />
+
+                <!-- Smart Button يظهر بعد الإنشاء -->
+                <button
+                        name="action_open_internal_transfer"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-exchange"
+                        invisible="picking_count == 0"
+                >
+                    <field name="picking_count"
+                           widget="statinfo"
+                           string=" Internal Transfer "/>
+
+
+                </button>
+
+
+                <button
+                        name="action_view_sales_order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-shopping-cart"
+                        invisible="sale_order_count == 0"
+                >
+                    <field name="sale_order_count" widget="statinfo" string=" Sales Order "/>
+                </button>
+
+
+            </header>
+
+
+            <xpath expr="//field[@name='user_ids']" position="after">
+                <field name="technician_id"
+                       placeholder="Select Technician"/>
+                <field name="source_location_id"/>
+                <field name="dest_location_id"/>
+
+            </xpath>
+
+            <!-- 🚗 Vehicles FIRST tab -->
+            <xpath expr="//notebook/page[1]" position="before">
+                <page string="Details">
+
+                    <field name="vehicle_ids" domain="[('company_id', '=', partner_id)]">
+                        <list editable="bottom">
+
+                            <field name="company_id"/>
+                            <field name="vehicle_name"/>
+                            <field name="driver"/>
+                            <field name="imei"/>
+                            <field name="sim_no"/>
+                            <field name="install_date"/>
+                            <field name="installation_type_id"/>
+                            <field name="vehicle_type_id"/>
+                            <field name="brand"/>
+
+                            <field name="status"
+                                   widget="badge"
+                                   decoration-success="status == 'active'"
+                                   decoration-danger="status == 'not_active'"/>
+                        </list>
+                    </field>
+
+                </page>
+            </xpath>
+
+
+            <!--
+    Add a new "Products" tab inside the Task form notebook.
+    This XPath targets the main <notebook> of the project.task form
+    and injects a new page that contains an editable One2many list
+    for task-related products (product lines).
+-->
+            <xpath expr="//notebook/page[1]" position="after">
+                <page string="Products">
+
+
+                    <field name="product_line_ids">
+                        <list editable="bottom">
+
+                            <!-- SI No (sequence with drag & drop support) -->
+                            <field name="si_no" readonly="1"/>
+                            <field name="sequence" widget="handle"/>
+                            <!-- Product selection -->
+                            <field name="product_id"/>
+
+                            <!-- Product internal reference (from product) -->
+                            <field name="reference" readonly="1"/>
+
+                            <!-- Line description -->
+                            <field name="description"/>
+
+                            <!-- Quantities -->
+                            <field name="quantity_ordered"/>
+                            <field name="quantity_transferred"/>
+                            <field name="quantity_returned"/>
+                            <field name="quantity_used" readonly="1"/>
+
+                        </list>
+                    </field>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_partner_form_inherit_require_fields" model="ir.ui.view">
+        <field name="name">res.partner.form.required.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- 1) Mobile required -->
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <!-- 2) Tags required -->
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <!-- 3) Pricelist empty + required -->
+            <xpath expr="//field[@name='property_product_pricelist']" position="attributes">
+                <attribute name="required">1</attribute>
+
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

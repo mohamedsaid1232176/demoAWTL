@@ -1,0 +1,45 @@
+<odoo>
+    <record id="view_sale_order_discount_limit" model="ir.ui.view">
+        <field name="name">sale.order.discount.limit</field>
+        <field name="model">sale.order.discount</field>
+        <field name="inherit_id" ref="sale.sale_order_line_wizard_form"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='discount_type']" position="after">
+
+                <!-- ✔️ يظهر للـ Admin فقط -->
+                <group string="Discount Limits (Admin Only)"
+                       groups="sales_team.group_sale_manager">
+
+                    <field name="max_discount_line"
+                           invisible="not show_line_limit"/>
+
+                    <field name="max_discount_global"
+                           invisible="not show_global_limit"/>
+
+                    <field name="max_discount_fixed"
+                           invisible="not show_fixed_limit"/>
+                </group>
+
+                <!-- ✔️ يظهر فقط للمستخدم العادي -->
+                <group string="Discount Limits (Read Only)"
+                       groups="!sales_team.group_sale_manager">
+
+                    <field name="max_discount_line_ro"
+                           readonly="1"
+                           invisible="not show_line_limit"/>
+
+                    <field name="max_discount_global_ro"
+                           readonly="1"
+                           invisible="not show_global_limit"/>
+
+                    <field name="max_discount_fixed_ro"
+                           readonly="1"
+                           invisible="not show_fixed_limit"/>
+                </group>
+
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,137 @@
+<odoo>
+    <data>
+        <template id="custom_footer_bubble" inherit_id="web.external_layout_bubble">
+
+            <!-- استبدال محتوى الفوتر بالكامل -->
+            <xpath expr="//div[@class='border-top pt-2']" position="replace">
+                <div style="border-top: 1px solid #000; width:100%; margin-bottom:6px;"></div>
+
+                <div style="font-size:13px; line-height:19px; text-align:center; padding-top:8px;">
+
+                    حي العليا، شارع العليا العام، العقارية 2، الطابق 4، مكتب 436 |
+                    ص ب 6847 الرياض 12244، المملكة العربية السعودية
+                    <br/>
+
+                    Olaya Dist., Olaya St., Akaria 2, 4th Floor, Office 436 |
+                    P.O. Box 6847, Riyadh 12244, KSA |
+                    تليفون (Tel): 9200035044 |
+                    فاكس (Fax): +966 11 5121020
+                    <br/>
+
+                    س.ت (C.R.): 1010349796 |
+                    غرفة تجارية (C.C.): 288830 |
+                    الرقم الضريبي (VAT Number): 300695889400003 |
+                    الرقم الوطني الموحد: 7001740492
+                    <br/>
+
+                    info@awtl.com.sa : البريد الإلكتروني
+                    |
+                    www.awtl.com.sa: الموقع الإلكتروني
+
+
+                </div>
+            </xpath>
+
+        </template>
+
+
+        <template id="inherit_saleorder_add_bank" inherit_id="sale.report_saleorder_document">
+
+            <!-- إضافة البنوك في آخر الـ PAGE -->
+            <xpath expr="//div[@class='page']" position="inside">
+
+                <!-- هنا نضمن أن البنوك تظهر آخر شيء داخل الـ BODY -->
+                <div style="width:100%; margin-top:25px;">
+                    <table style="
+        width:100%;
+        border:1px solid #000;
+        border-collapse:collapse;
+        font-size:14px;
+        text-align:center;
+        table-layout:fixed;
+    ">
+
+                        <tr>
+                            <!-- مصرف الراجحي -->
+                            <td style="
+                width:50%;
+                padding:12px 10px;
+                vertical-align:top;
+                border-right:1px solid #000;
+                line-height:20px;
+            ">
+                                <strong>مصرف الراجحي (Al Rajhi Bank)</strong>
+                                <br/>
+                                Acc No: 101000010006080222337
+                                <br/>
+                                IBAN: SA72 8000 0101 6080 1022 2337
+                                <br/>
+                                Swift: RJHISARI
+                            </td>
+
+                            <!-- البنك السعودي للاستثمار -->
+                            <td style="
+                width:50%;
+                padding:12px 10px;
+                vertical-align:top;
+                line-height:20px;
+            ">
+                                <strong>البنك السعودي للاستثمار (SAIB)</strong>
+                                <br/>
+                                Acc No: 0116180902001
+                                <br/>
+                                IBAN: SA78 6500 0000 1161 8090 2001
+                                <br/>
+                                Swift: SIBCSARI
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </xpath>
+
+        </template>
+        <!--        <template id="report_saleorder_document_inherit_brochure"-->
+        <!--                  inherit_id="sale.report_saleorder_document">-->
+
+        <!--            <xpath expr="//div[@class='page'][last()]" position="after">-->
+
+        <!--                &lt;!&ndash; صفحة 1 &ndash;&gt;-->
+
+        <!--                <div class="page" style="page-break-before: always; margin:0; padding:0;">-->
+        <!--                    <img src="/custom_price_security/static/src/img/company_info.jpg"-->
+        <!--                         style="width:100%; height:100vh; object-fit:cover;"/>-->
+        <!--                </div>-->
+
+
+        <!--                &lt;!&ndash;                <div class="page" style="page-break-before: always;">&ndash;&gt;-->
+        <!--                &lt;!&ndash;                    <img src="/custom_price_security/static/src/img/img.png"&ndash;&gt;-->
+        <!--                &lt;!&ndash;                         style="width:100%; max-height:850px; object-fit:contain; display:block; margin-top:20px;"/>&ndash;&gt;-->
+        <!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+
+        <!--                &lt;!&ndash;                &lt;!&ndash; صفحة 2 &ndash;&gt;&ndash;&gt;-->
+        <!--                &lt;!&ndash;                <div class="page" style="page-break-before: always;">&ndash;&gt;-->
+        <!--                &lt;!&ndash;                    <img src="/custom_price_security/static/src/img/img_1.png"&ndash;&gt;-->
+        <!--                &lt;!&ndash;                         style="width:100%; max-height:850px; object-fit:contain; display:block; margin-top:20px;"/>&ndash;&gt;-->
+        <!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+
+        <!--            </xpath>-->
+
+        <!--        </template>-->
+        <!--        <template id="report_invoice_document_inherit_brochure"-->
+        <!--                  inherit_id="account.report_invoice_document">-->
+
+        <!--            <xpath expr="//div[contains(@class,'invoice_main')]" position="after">-->
+
+        <!--                <div class="page" style="page-break-before: always; margin:0; padding:0;">-->
+        <!--                    <img src="/custom_price_security/static/src/img/company_info.jpg"-->
+        <!--                         style="width:210mm; height:297mm; object-fit:cover;"/>-->
+        <!--                </div>-->
+
+        <!--            </xpath>-->
+
+        <!--        </template>-->
+
+
+    </data>
+</odoo>

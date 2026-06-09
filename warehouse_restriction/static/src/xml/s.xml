@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-inherit="stock.StockReportSearchPanel.Regular"
+       t-inherit-mode="extension">
+
+        <xpath expr="//section[contains(@class,'o_search_panel_warehouse')]"
+               position="attributes">
+            <attribute name="t-if">warehouses.length</attribute>
+        </xpath>
+
+    </t>
+
+</templates>

@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_res_users_form_inherit_limits" model="ir.ui.view">
+        <field name="name">res.users.form.purchase.limits</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Purchase Permissions">
+                    <group string="User">
+                        <field name="purchase_user_limit"/>
+                    </group>
+                    <group string="Purchase Manager (Admin)">
+                        <field name="purchase_manager_from"/>
+                        <field name="purchase_manager_to"/>
+                    </group>
+                    <group string="Accounting Manager">
+
+                        <field name="accounting_limit"/>
+
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_equipment_code" model="ir.sequence">
+        <field name="name">Equipment Sequence</field>
+        <field name="code">equipment.seq</field>
+        <field name="prefix">EQP</field>
+        <field name="padding">5</field>
+        <field name="number_next_actual">1</field>
+    </record>
+</odoo>

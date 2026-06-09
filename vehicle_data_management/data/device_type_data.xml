@@ -1,0 +1,161 @@
+<odoo>
+
+    <record id="device_type_teltonika" model="device.type">
+        <field name="name">teltonika</field>
+    </record>
+
+    <record id="device_type_fmb_920" model="device.type">
+        <field name="name">FMB 920</field>
+    </record>
+
+    <record id="device_type_teltonika_8e" model="device.type">
+        <field name="name">Teltonika 8E</field>
+    </record>
+
+    <record id="device_type_ak11" model="device.type">
+        <field name="name">AK11</field>
+    </record>
+
+    <record id="device_type_gt06" model="device.type">
+        <field name="name">GT06</field>
+    </record>
+
+
+    <!--    installation default field -->
+    <record id="installation_type_pta" model="installation.type">
+        <field name="name">PTA</field>
+    </record>
+
+    <record id="installation_type_basic" model="installation.type">
+        <field name="name">Basic</field>
+    </record>
+
+    <record id="installation_type_na" model="installation.type">
+        <field name="name">NA</field>
+    </record>
+
+    <record id="installation_type_sfda" model="installation.type">
+        <field name="name">SFDA</field>
+    </record>
+
+    <record id="installation_type_p" model="installation.type">
+        <field name="name">P</field>
+    </record>
+
+
+    <!--  vehicle type default field-->
+
+    <record id="vehicle_type_truck" model="vehicle.type">
+        <field name="name">Truck</field>
+    </record>
+
+    <record id="vehicle_type_bobcat" model="vehicle.type">
+        <field name="name">Bobcat</field>
+    </record>
+
+    <record id="vehicle_type_bulldozer" model="vehicle.type">
+        <field name="name">Bulldozer</field>
+    </record>
+
+    <record id="vehicle_type_schoolbus" model="vehicle.type">
+        <field name="name">SchoolBus</field>
+    </record>
+
+    <record id="vehicle_type_car" model="vehicle.type">
+        <field name="name">Car</field>
+    </record>
+
+    <record id="vehicle_type_motorcycle" model="vehicle.type">
+        <field name="name">Motorcycle</field>
+    </record>
+
+    <record id="vehicle_type_van" model="vehicle.type">
+        <field name="name">Van</field>
+    </record>
+
+    <record id="vehicle_type_crane" model="vehicle.type">
+        <field name="name">Crane</field>
+    </record>
+
+    <record id="vehicle_type_trailer" model="vehicle.type">
+        <field name="name">Trailer</field>
+    </record>
+
+    <record id="vehicle_type_coaster_bus" model="vehicle.type">
+        <field name="name">Coaster Bus</field>
+    </record>
+
+    <record id="vehicle_type_pickup" model="vehicle.type">
+        <field name="name">PickUp</field>
+    </record>
+
+    <record id="vehicle_type_jcb" model="vehicle.type">
+        <field name="name">JCB</field>
+    </record>
+
+    <record id="vehicle_type_tourist_bus" model="vehicle.type">
+        <field name="name">Tourist Bus</field>
+    </record>
+
+    <record id="vehicle_type_tanker" model="vehicle.type">
+        <field name="name">Tanker</field>
+    </record>
+
+    <record id="vehicle_type_hiace" model="vehicle.type">
+        <field name="name">Hiace</field>
+    </record>
+
+    <record id="vehicle_type_hilux" model="vehicle.type">
+        <field name="name">Hilux</field>
+    </record>
+
+    <record id="vehicle_type_suv" model="vehicle.type">
+        <field name="name">SUV</field>
+    </record>
+
+    <record id="vehicle_type_2ton_pickup" model="vehicle.type">
+        <field name="name">2Ton PickUp</field>
+    </record>
+
+    <record id="vehicle_type_boom_loader" model="vehicle.type">
+        <field name="name">Boom Loader</field>
+    </record>
+
+    <record id="vehicle_type_mini_bus" model="vehicle.type">
+        <field name="name">Mini Bus</field>
+    </record>
+
+    <record id="vehicle_type_shovel" model="vehicle.type">
+        <field name="name">Shovel</field>
+    </record>
+
+    <record id="vehicle_type_excavator" model="vehicle.type">
+        <field name="name">Excavator</field>
+    </record>
+
+    <record id="vehicle_type_canter" model="vehicle.type">
+        <field name="name">Canter</field>
+    </record>
+
+    <record id="vehicle_type_dumper" model="vehicle.type">
+        <field name="name">Dumper</field>
+    </record>
+
+    <record id="vehicle_type_7683_tvr" model="vehicle.type">
+        <field name="name">7683 TVR</field>
+    </record>
+
+    <record id="vehicle_type_c" model="vehicle.type">
+        <field name="name">C</field>
+    </record>
+
+    <record id="vehicle_type_hi" model="vehicle.type">
+        <field name="name">HI'</field>
+    </record>
+
+    <record id="vehicle_type_forklif" model="vehicle.type">
+        <field name="name">Forklif</field>
+    </record>
+
+
+</odoo>

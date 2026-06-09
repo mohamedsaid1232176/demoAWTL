@@ -1,0 +1,174 @@
+<odoo>
+
+    <record id="view_order_form_inherit_technician" model="ir.ui.view">
+        <field name="name">sale.order.form.technician</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- امسك الجروب اللي فيه customer -->
+            <xpath expr="//group[.//field[@name='partner_id']]" position="inside">
+                <group string="technicians">
+                    <field name="technician_ids" widget="many2many_tags"/>
+
+                </group>
+            </xpath>
+
+            <!-- امسك الجروب اللي فيه Payment Terms -->
+            <xpath expr="//group[.//field[@name='payment_term_id']]" position="inside">
+                <!-- آخر عنصر في الجروب -->
+
+                <group>
+
+                    <field name="vehicle_count"/>
+
+                </group>
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_form_inherit_vehicle_count" model="ir.ui.view">
+        <field name="name">account.move.form.vehicle.count</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//group[.//field[@name='invoice_payment_term_id']]" position="inside">
+                <group>
+                    <field name="vehicle_count" readonly="1"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+   <template id="report_invoice_vehicle_count_inherit"
+          inherit_id="l10n_gcc_invoice.arabic_english_invoice">
+
+    <xpath expr="//table[@name='invoice_line_table']" position="before">
+        <table t-if="o.vehicle_count"
+               style="width:100%; margin-bottom:8px; border:1px solid #000; border-radius:10px; overflow:hidden; border-collapse:separate; border-spacing:0;">
+            <tr>
+                <td style="padding:8px 10px; width:35%; border:none; text-align:left; vertical-align:middle;">
+                    <strong>Vehicle / Plate Number:</strong>
+                </td>
+                <td style="padding:8px 10px; width:15%; border:none; text-align:left; vertical-align:middle;">
+                    <span t-field="o.vehicle_count"/>
+                </td>
+                <td style="padding:8px 10px; width:35%; border:none; text-align:right; vertical-align:middle;" dir="rtl">
+                    <strong>رقم المركبة / اللوحة:</strong>
+                </td>
+
+            </tr>
+        </table>
+    </xpath>
+
+</template>
+
+    <record id="sale_report_view_inherit_custom" model="ir.ui.view">
+        <field name="name">sale.report.view.list.custom</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.sale_report_view_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- بعد Customer -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+
+                <field name="customer_phone"/>
+                <field name="technician_names"/>
+                <field name="vehicle_count"/>
+                <field name="warehouse_custom_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="sale_report_view_search_inherit_custom" model="ir.ui.view">
+        <field name="name">sale.report.search.custom</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search"/>
+        <field name="arch" type="xml">
+
+            <!-- ===================== -->
+            <!-- Filters -->
+            <!-- ===================== -->
+            <xpath expr="//search" position="inside">
+
+                <!-- Phone -->
+                <filter string="Has Phone"
+                        name="filter_phone"
+                        domain="[('customer_phone','!=',False)]"/>
+
+                <!-- Vehicle -->
+                <filter string="Has Vehicles"
+                        name="filter_vehicle"
+                        domain="[('vehicle_count','!=',False)]"/>
+
+                <!-- Warehouse -->
+                <filter string="Warehouse"
+                        name="filter_warehouse"
+                        domain="[]"
+                        context="{'group_by':'warehouse_custom_id'}"/>
+
+                <!-- Technicians -->
+                <filter string="Technicians"
+                        name="filter_technician"
+                        domain="[('technician_names','!=',False)]"/>
+
+            </xpath>
+
+            <!-- ===================== -->
+            <!-- Group By -->
+            <!-- ===================== -->
+            <xpath expr="//group[@expand='0']" position="inside">
+
+                <filter string="Phone"
+                        name="group_by_phone"
+                        context="{'group_by':'customer_phone'}"/>
+
+                <filter string="Vehicles"
+                        name="group_by_vehicle"
+                        context="{'group_by':'vehicle_count'}"/>
+
+                <filter string="Warehouse"
+                        name="group_by_warehouse"
+                        context="{'group_by':'warehouse_custom_id'}"/>
+
+                <filter string="Technicians"
+                        name="group_by_technician"
+                        context="{'group_by':'technician_names'}"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="view_account_payment_tree_inherit_memo" model="ir.ui.view">
+        <field name="name">account.payment.tree.memo</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name="memo"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_account_payment_search_inherit_memo" model="ir.ui.view">
+        <field name="name">account.payment.search.memo</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search"/>
+        <field name="arch" type="xml">
+
+
+            <!-- نحط memo قبل name -->
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="memo" string="Memo"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
