@@ -5,7 +5,7 @@
         <field name="name">طباعة العقد</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="domain" eval="[('is_subscription', '=', True)]"/>
+        <field name="domain" eval="[('is_company_subscription', '=', True)]"/>
         <field name="report_name">custom_mexly_subscription.sale_order_custom_template</field>
         <field name="report_file">custom_mexly_subscription.sale_order_custom_template</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>

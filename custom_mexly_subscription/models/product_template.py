@@ -43,7 +43,8 @@ class ProductTemplate(models.Model):
     @api.depends('company_id')
     def _compute_is_company_subscription(self):
         for product in self:
-            product.is_company_subscription = product.company_id.is_subscription
+            company = product.company_id or self.env.company
+            product.is_company_subscription = company.is_subscription
 
     def action_link_analytic(self):
         self.ensure_one()

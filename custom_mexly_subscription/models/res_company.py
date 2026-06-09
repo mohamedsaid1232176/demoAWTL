@@ -3,13 +3,17 @@ from odoo import models, fields, api
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    def _default_subscription_state_ids(self):
+        return self.env['subscription.state'].search([])
+
     is_subscription = fields.Boolean(string='Is Subscription Company', default=False)
 
     subscription_product = fields.Boolean(string='Subscription Product', default=False)
 
     subscription_state_ids = fields.Many2many(
-    'subscription.state', 
-    string='Subscription States'
+        'subscription.state',
+        string='Subscription States',
+        default=_default_subscription_state_ids,
     )
 
     organization_type = fields.Many2one('organization.type', string="نوع المنظمة")
