@@ -1,0 +1,49 @@
+<odoo>
+
+
+    <record id="view_wizard_create_po" model="ir.ui.view">
+        <field name="name">wizard.create.po.form</field>
+        <field name="model">wizard.create.po</field>
+        <field name="arch" type="xml">
+            <form string="Create Purchase Order">
+                <group>
+                    <field name="vendor_id"/>
+                    <field name="po_type"/>
+                </group>
+
+                <footer>
+                    <button string="Confirm"
+                            name="action_confirm_create_po"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_wizard_create_job_order" model="ir.ui.view">
+        <field name="name">wizard.create.job.order.form</field>
+        <field name="model">wizard.create.job.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="job_type"/>
+
+                    <!-- vendor يظهر فقط لو job_type = sub_with -->
+                    <field name="vendor_id"
+                           invisible="not (job_type == 'sub_with' or job_type == 'sub_without')"/>
+
+                </group>
+
+                <footer>
+                    <button string="Confirm" type="object" name="action_confirm" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>

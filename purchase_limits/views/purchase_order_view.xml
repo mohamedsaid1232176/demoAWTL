@@ -1,0 +1,59 @@
+<odoo>
+    <record id="purchase_order_form_approval_stage" model="ir.ui.view">
+        <field name="name">purchase.order.form.approval.stage</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Stage شريط في أعلى الفورم -->
+            <xpath expr="//sheet" position="before">
+
+                <div style="width:100%; display:flex; justify-content:flex-end; margin-bottom:10px;">
+                    <div style="max-width:100%; white-space:nowrap;">
+                        <field name="approval_stage"
+                               widget="statusbar"
+                               statusbar_visible="none,waiting_purchase_manager,waiting_finance_manager,approved"
+                               readonly="1"
+                               style="white-space:nowrap; overflow:visible; text-overflow:unset;"/>
+                    </div>
+                </div>
+
+            </xpath>
+
+
+            <!-- زرار الانتقال بين المراحل -->
+            <xpath expr="//header/button[@name='button_confirm']" position="after">
+
+                <!-- موظف مشتريات -->
+                <button name="action_send_to_purchase_manager"
+                        string="تحويل لمدير المشتريات"
+                        type="object"
+                        class="btn btn-primary"
+                        invisible="not can_send_to_manager"/>
+
+                <!-- مدير مشتريات -->
+                <button name="action_send_to_finance_manager"
+                        string="تحويل للمدير المالي"
+                        type="object"
+                        class="btn btn-warning"
+                        invisible="not can_send_to_finance"/>
+
+                <!-- مدير مالي -->
+                <button name="action_approve_final"
+                        string="اعتماد نهائي"
+                        type="object"
+                        class="btn btn-success"
+                        invisible="not can_finance_confirm"/>
+            </xpath>
+
+            <!-- Inject hidden fields -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <field name="can_send_to_manager" invisible="1"/>
+                <field name="can_send_to_finance" invisible="1"/>
+                <field name="can_manager_confirm" invisible="1"/>
+                <field name="can_finance_confirm" invisible="1"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

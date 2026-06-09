@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_spl_national_address" model="ir.ui.view">
+        <field name="name">res.partner.form.spl.national.address</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="SPL National Address">
+                    <group>
+                        <group>
+                            <field name="spl_search_text" placeholder="مثال: 8228 12643"/>
+                            <button name="action_spl_search_address" string="Search SPL Address" type="object" class="btn-primary"/>
+                            <button name="action_spl_verify_address" string="Verify SPL Address" type="object"/>
+                        </group>
+                        <group>
+                            <field name="spl_address_verified" readonly="1"/>
+                            <field name="spl_status_description" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="National Address">
+                        <group>
+                            <field name="spl_building_number"/>
+                            <field name="spl_postcode"/>
+                            <field name="spl_additional_number"/>
+                        </group>
+                        <group>
+                            <field name="spl_district"/>
+                            <field name="spl_region_name"/>
+                        </group>
+                    </group>
+                    <group string="Coordinates">
+                        <field name="spl_latitude" readonly="1"/>
+                        <field name="spl_longitude" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

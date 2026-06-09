@@ -1,0 +1,762 @@
+<odoo>
+
+    <!-- ===================== -->
+    <!-- ACTION -->
+    <!-- ===================== -->
+    <record id="action_open_dashboard_server" model="ir.actions.server">
+        <field name="name">Open Dashboard</field>
+        <field name="model_id" ref="model_subscription_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env['subscription.dashboard'].action_open_dashboard()
+        </field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- MENU -->
+    <!-- ===================== -->
+    <menuitem id="menu_subscription_dashboard"
+              name="Dashboard"
+              parent="sale_subscription.menu_sale_subscription_root"
+              action="action_open_dashboard_server"
+              sequence="100"
+    />
+    <record id="view_dashboard_graph" model="ir.ui.view">
+        <field name="name">dashboard.graph.view</field>
+        <field name="model">dashboard.graph</field>
+        <field name="arch" type="xml">
+            <graph string="Sales by Type" type="bar">
+                <field name="name" type="row"/>
+                <field name="value" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+
+    <record id="state_draft" model="subscription.state.helper">
+        <field name="name">Quotation</field>
+        <field name="code">1_draft</field>
+    </record>
+
+    <record id="state_renewal" model="subscription.state.helper">
+        <field name="name">Renewal Quotation</field>
+        <field name="code">2_renewal</field>
+    </record>
+
+    <record id="state_progress" model="subscription.state.helper">
+        <field name="name">In Progress</field>
+        <field name="code">3_progress</field>
+    </record>
+
+    <record id="state_paused" model="subscription.state.helper">
+        <field name="name">Paused</field>
+        <field name="code">4_paused</field>
+    </record>
+
+    <record id="state_renewed" model="subscription.state.helper">
+        <field name="name">Renewed</field>
+        <field name="code">5_renewed</field>
+    </record>
+
+    <record id="state_churn" model="subscription.state.helper">
+        <field name="name">Churned</field>
+        <field name="code">6_churn</field>
+    </record>
+
+    <record id="state_upsell" model="subscription.state.helper">
+        <field name="name">Upsell</field>
+        <field name="code">7_upsell</field>
+    </record>
+
+
+    <!-- ===================== -->
+    <!-- DASHBOARD VIEW -->
+    <!-- ===================== -->
+    <record id="view_subscription_dashboard_form" model="ir.ui.view">
+        <field name="name">subscription.dashboard.form</field>
+        <field name="model">subscription.dashboard</field>
+        <field name="arch" type="xml">
+
+            <form string="Dashboard" create="False" delete="False">
+
+                <!-- 🔥 FIXED CSS -->
+
+                <div class="super-filter">
+
+                    <div class="super-filter-header center">
+                        <i class="fa fa-filter"/>
+                        Filter by Subscription Status
+                    </div>
+
+                    <!-- 🔥 SELECTION -->
+                    <div class="filter-tags">
+                        <field name="subscription_states" widget="many2many_tags"/>
+                    </div>
+
+                    <!-- 🔥 CENTER BUTTON -->
+                    <div class="filter-action-center">
+                        <button name="action_apply_filter"
+                                type="object"
+                                class="super-filter-btn big">
+
+                            <i class="fa fa-bolt"/>
+                            Apply Filters
+
+                        </button>
+                    </div>
+
+                </div>
+                <div class="dashboard-container">
+
+                    <button name="%(report_subscription_full)d"
+                            type="action"
+                            string="Download Full Report"
+                            class="modern-btn"
+                    />
+                </div>
+                <!-- 🔥 CARDS -->
+                <div class="dashboard-container">
+
+                    <!-- Apartment -->
+                    <div class="dash-card purple">
+                        <button name="open_products" type="object"
+                                context="{'unit_type':'apartment','states': subscription_states.ids}"
+                                class="dash-btn">
+                            <i class="fa fa-home"/>
+                        </button>
+                        <div class="dash-title">شقة</div>
+                        <div class="dash-count">
+                            <field name="apartment_count"/>
+                        </div>
+
+                        <div class="dash-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Sales Price</div>
+                                <div class="stat-value">
+                                    <field name="apartment_sales"/>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Cost</div>
+                                <div class="stat-value">
+                                    <field name="apartment_cost"/>
+                                </div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Revenue</div>
+                                <div class="stat-value">
+                                    <field name="apartment_revenue"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Building -->
+                    <div class="dash-card blue">
+                        <button name="open_products" type="object"
+                                context="{
+            'unit_type':'building',
+        }" class="dash-btn">
+                            <i class="fa fa-building"/>
+                        </button>
+                        <div class="dash-title">مبنى</div>
+                        <div class="dash-count">
+                            <field name="building_count"/>
+                        </div>
+
+                        <div class="dash-stats">
+                            <!--                            <div class="stat-box">-->
+                            <!--                                <div class="stat-label">Sales Price</div>-->
+                            <!--                                <div class="stat-value">-->
+                            <!--                                    <field name="building_sales"/>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <div class="stat-box">
+                                <div class="stat-label">Cost</div>
+                                <div class="stat-value">
+                                    <field name="building_cost"/>
+                                </div>
+                            </div>
+                            <!-- 🔥 NEW -->
+                            <div class="stat-box">
+                                <div class="stat-label">Revenue</div>
+                                <div class="stat-value">
+                                    <field name="building_revenue"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Room -->
+                    <div class="dash-card green">
+                        <button name="open_products" type="object"
+                                context="{'unit_type':'room',    'states': subscription_states.ids}"
+                                class="dash-btn">
+                            <i class="fa fa-columns"/>
+                        </button>
+                        <div class="dash-title">غرفة</div>
+                        <div class="dash-count">
+                            <field name="room_count"/>
+                        </div>
+
+                        <div class="dash-stats">
+                            <!--                            <div class="stat-box">-->
+                            <!--                                <div class="stat-label">Sales Price</div>-->
+                            <!--                                <div class="stat-value">-->
+                            <!--                                    <field name="room_sales"/>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <div class="stat-box">
+                                <div class="stat-label">Cost</div>
+                                <div class="stat-value">
+                                    <field name="room_cost"/>
+                                </div>
+                            </div>
+                            <!-- 🔥 NEW -->
+                            <div class="stat-box">
+                                <div class="stat-label">Revenue</div>
+                                <div class="stat-value">
+                                    <field name="room_revenue"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Bed -->
+                    <div class="dash-card orange">
+                        <button name="open_products" type="object"
+                                context="{'unit_type':'bed',    'states': subscription_states.ids}"
+                                class="dash-btn">
+                            <i class="fa fa-bed"/>
+                        </button>
+                        <div class="dash-title">سرير</div>
+                        <div class="dash-count">
+                            <field name="bed_count"/>
+                        </div>
+
+                        <div class="dash-stats">
+                            <!--                            <div class="stat-box">-->
+                            <!--                                <div class="stat-label">Sales Price</div>-->
+                            <!--                                <div class="stat-value">-->
+                            <!--                                    <field name="bed_sales"/>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <div class="stat-box">
+                                <div class="stat-label">Cost</div>
+                                <div class="stat-value">
+                                    <field name="bed_cost"/>
+                                </div>
+                            </div>
+                            <!-- 🔥 NEW -->
+                            <div class="stat-box">
+                                <div class="stat-label">Revenue</div>
+                                <div class="stat-value">
+                                    <field name="bed_revenue"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service -->
+                    <div class="dash-card red">
+                        <button name="open_products" type="object"
+                                context="{'unit_type':'service',    'states': subscription_states.ids}"
+                                class="dash-btn">
+                            <i class="fa fa-cogs"/>
+                        </button>
+                        <div class="dash-title">خادمي</div>
+                        <div class="dash-count">
+                            <field name="service_count"/>
+                        </div>
+
+                        <div class="dash-stats">
+                            <!--                            <div class="stat-box">-->
+                            <!--                                <div class="stat-label">Sales Price</div>-->
+                            <!--                                <div class="stat-value">-->
+                            <!--                                    <field name="service_sales"/>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <div class="stat-box">
+                                <div class="stat-label">Cost</div>
+                                <div class="stat-value">
+                                    <field name="service_cost"/>
+                                </div>
+                            </div>
+                            <!-- 🔥 NEW -->
+                            <div class="stat-box">
+                                <div class="stat-label">Revenue</div>
+                                <div class="stat-value">
+                                    <field name="service_revenue"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- 🔥 PREMIUM GRAPH CARD -->
+                <div class="graph-card wide-card">
+
+                    <!-- HEADER -->
+                    <div class="graph-top">
+                        <div class="graph-title">
+                            <i class="fa fa-bar-chart"/>
+                            Dashboard Analytics
+                        </div>
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="graph-content">
+
+                        <div class="graph-center">
+
+                            <button name="open_graph"
+                                    type="object"
+                                    class="graph-main-btn">
+
+                                <i class="fa fa-bar-chart"/>
+                                View Analytics
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- 🔥 UNUSED SECTION TITLE -->
+                <div class="unused-header">
+                    Unused Units Overview
+                </div>
+
+                <div class="unused-subtitle">
+                    Monitor units that are not linked to any active subscription
+                </div>
+
+                <!-- 🔥 UNUSED CARDS -->
+                <div class="unused-container">
+
+                    <!-- 🟣 Apartment -->
+                    <div class="u-card u-purple">
+                        <button name="open_unused_products" type="object"
+                                context="{'unit_type':'apartment'}"
+                                class="u-btn">
+                            <i class="fa fa-home"/>
+                        </button>
+
+                        <div class="u-title">شقق غير مستخدمه</div>
+                        <i class="fa fa-ban"/>
+                        <div class="u-count">
+                            <field name="unused_apartment_count"/>
+                        </div>
+
+                        <div class="u-stats">
+                            <div class="u-box">
+                                <span>Sales</span>
+                                <b>
+                                    <field name="unused_apartment_sales"/>
+                                </b>
+                            </div>
+                            <div class="u-box">
+                                <span>Cost</span>
+                                <b>
+                                    <field name="unused_apartment_cost"/>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🔵 Building -->
+                    <div class="u-card u-blue">
+                        <button name="open_unused_products" type="object"
+                                context="{'unit_type':'building'}"
+                                class="u-btn">
+                            <i class="fa fa-building"/>
+                        </button>
+
+                        <div class="u-title">مباني غير مستخدمه</div>
+                        <i class="fa fa-ban"/>
+                        <div class="u-count">
+                            <field name="unused_building_count"/>
+                        </div>
+
+                        <div class="u-stats">
+                            <!--                            <div class="u-box">-->
+                            <!--                                <span>Sales</span>-->
+                            <!--                                <b>-->
+                            <!--                                    <field name="unused_building_sales"/>-->
+                            <!--                                </b>-->
+                            <!--                            </div>-->
+                            <div class="u-box">
+                                <span>Cost</span>
+                                <b>
+                                    <field name="unused_building_cost"/>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🟢 Room -->
+                    <div class="u-card u-green">
+                        <button name="open_unused_products" type="object"
+                                context="{'unit_type':'room'}"
+                                class="u-btn">
+                            <i class="fa fa-columns"/>
+                        </button>
+
+                        <div class="u-title">غرف غير مستخدمه</div>
+                        <i class="fa fa-ban"/>
+                        <div class="u-count">
+                            <field name="unused_room_count"/>
+                        </div>
+
+                        <div class="u-stats">
+                            <!--                            <div class="u-box">-->
+                            <!--                                <span>Sales</span>-->
+                            <!--                                <b>-->
+                            <!--                                    <field name="unused_room_sales"/>-->
+                            <!--                                </b>-->
+                            <!--                            </div>-->
+                            <div class="u-box">
+                                <span>Cost</span>
+                                <b>
+                                    <field name="unused_room_cost"/>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🟠 Bed -->
+                    <div class="u-card u-orange">
+                        <button name="open_unused_products" type="object"
+                                context="{'unit_type':'bed'}"
+                                class="u-btn">
+                            <i class="fa fa-bed"/>
+                        </button>
+
+                        <div class="u-title">سراير غير مستخدمه</div>
+                        <i class="fa fa-ban"/>
+                        <div class="u-count">
+                            <field name="unused_bed_count"/>
+                        </div>
+
+                        <div class="u-stats">
+                            <!--                            <div class="u-box">-->
+                            <!--                                <span>Sales</span>-->
+                            <!--                                <b>-->
+                            <!--                                    <field name="unused_bed_sales"/>-->
+                            <!--                                </b>-->
+                            <!--                            </div>-->
+                            <div class="u-box">
+                                <span>Cost</span>
+                                <b>
+                                    <field name="unused_bed_cost"/>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🔴 Service -->
+                    <div class="u-card u-red">
+                        <button name="open_unused_products" type="object"
+                                context="{'unit_type':'service'}"
+                                class="u-btn">
+                            <i class="fa fa-cogs"/>
+                        </button>
+
+                        <div class="u-title">خدمات غير مستخدمه</div>
+                        <i class="fa fa-ban"/>
+                        <div class="u-count">
+                            <field name="unused_service_count"/>
+                        </div>
+
+                        <div class="u-stats">
+                            <!--                            <div class="u-box">-->
+                            <!--                                <span>Sales</span>-->
+                            <!--                                <b>-->
+                            <!--                                    <field name="unused_service_sales"/>-->
+                            <!--                                </b>-->
+                            <!--                            </div>-->
+                            <div class="u-box">
+                                <span>Cost</span>
+                                <b>
+                                    <field name="unused_service_cost"/>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="wide-card">
+
+                    <!-- 🔥 TITLE -->
+                    <div class="wide-header">
+                        <i class="fa fa-line-chart"/>
+                        Aged Receivable Analytics
+                    </div>
+
+                    <!-- 🔥 DIGITAL NUMBER -->
+                    <div class="wide-digital">
+                        📊 LIVE REPORT
+                    </div>
+
+                    <!-- 🔥 CENTER BUTTON -->
+                    <div class="wide-center">
+                        <button name="open_aged_receivable"
+                                type="object"
+                                class="wide-btn">
+                            <i class="fa fa-bar-chart"/>
+                            View Aged Receivable
+                        </button>
+                    </div>
+
+                </div>
+                <div class="wide-card">
+
+                    <!-- 🔥 TITLE -->
+                    <div class="wide-header">
+                        <i class="fa fa-file-text-o"/>
+                        Invoices To Pay Analytics
+                    </div>
+
+                    <!-- 🔥 DIGITAL TEXT -->
+                    <div class="wide-digital">
+                        💰 OUTSTANDING INVOICES
+                    </div>
+
+                    <!-- 🔥 CENTER BUTTON -->
+                    <div class="wide-center">
+                        <button name="open_invoices_to_pay_pivot"
+                                type="object"
+                                class="wide-btn">
+
+                            <i class="fa fa-bar-chart"/>
+                            View Invoices Pivot
+
+                        </button>
+                    </div>
+
+                </div>
+                <div class="wide-card">
+
+                    <!-- 🔥 HEADER -->
+                    <div class="wide-header">
+                        <i class="fa fa-building"/>
+                        Building Analysis
+                    </div>
+
+                    <!-- 🔥 TEXT -->
+                    <div class="wide-digital">
+                        📊 BUILDING INSIGHTS
+                    </div>
+
+                    <!-- 🔥 FILTER -->
+                    <div class="wide-center" style="margin-bottom: 20px;">
+                        <div style="width: 40%;">
+                            <field name="building_id"
+                                   placeholder="Select Building..."
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+
+                    <!-- 🔥 BUTTON -->
+                    <div class="wide-center">
+                        <button name="action_analyze_building"
+                                type="object"
+                                class="wide-btn">
+
+                            <i class="fa fa-bar-chart"/>
+                            Analyze Now
+
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+        </field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- PRODUCT DASHBOARD VIEW -->
+    <!-- ===================== -->
+    <record id="view_product_dashboard_viewer_form" model="ir.ui.view">
+        <field name="name">product.dashboard.viewer.form</field>
+        <field name="model">product.dashboard.viewer</field>
+        <field name="arch" type="xml">
+
+            <form string="Product Details">
+
+                <!-- 🔥 CONTENT -->
+                <div class="product-dashboard">
+
+                    <!-- PRODUCT NAME -->
+                    <div class="product-title">
+                        <field name="product_id" readonly="1"/>
+                    </div>
+
+                    <!-- CARDS -->
+                    <div class="top-cards">
+
+                        <div class="p-card purple">
+                            <div class="p-icon">
+                                <i class="fa fa-dollar"/>
+                            </div>
+                            <div class="p-title">Total Unit Price</div>
+                            <div class="p-value">
+                                <field name="total_unit_price" readonly="1"/>
+                            </div>
+                        </div>
+
+                        <div class="p-card blue">
+                            <div class="p-icon">
+                                <i class="fa fa-line-chart"/>
+                            </div>
+                            <div class="p-title">Total Revenue</div>
+                            <div class="p-value">
+                                <field name="total_revenue" readonly="1"/>
+                            </div>
+                        </div>
+
+                        <div class="p-card orange">
+                            <div class="p-icon">
+                                <i class="fa fa-shopping-cart"/>
+                            </div>
+                            <div class="p-title">Orders Count</div>
+                            <div class="p-value">
+                                <field name="line_count" readonly="1"/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- 🔥 FILTER BUTTONS -->
+                    <div class="filter-bar">
+
+                        <button name="sort_by_unit_price"
+                                type="object"
+                                class="filter-btn purple">
+                            <i class="fa fa-sort-amount-desc"/>
+                            Sort by Unit Price
+                        </button>
+
+                        <button name="sort_by_revenue"
+                                type="object"
+                                class="filter-btn blue">
+                            <i class="fa fa-line-chart"/>
+                            Sort by Revenue
+                        </button>
+
+                    </div>
+                    <!-- TABLE -->
+                    <group>
+                        <field name="line_ids" string="">
+                            <list create="0" delete="0" write="0" class="o_list_view">
+                                <field name="order_id"/>
+                                <!-- ✅ الجديد -->
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+
+                                <field name="unit_price"/>
+                                <field name="subtotal" string="Revenue"/>
+
+                            </list>
+                        </field>
+                    </group>
+
+                </div>
+
+            </form>
+
+        </field>
+    </record>
+
+    <record id="view_product_list_dashboard_form" model="ir.ui.view">
+        <field name="name">product.list.dashboard.form</field>
+        <field name="model">product.list.dashboard</field>
+        <field name="arch" type="xml">
+
+            <form string="Products Dashboard">
+
+                <div class="prod-dash">
+
+                    <!-- 🔥 CARDS -->
+                    <div class="cards">
+
+                        <!--                        <div class="card sales">-->
+                        <!--                            <div class="card-icon">-->
+                        <!--                                <i class="fa fa-line-chart"/>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="card-title">Total Sales Price</div>-->
+                        <!--                            <div class="card-value">-->
+                        <!--                                <field name="total_sales" readonly="1"/>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!-- 🔥 NEW Revenue -->
+                        <div class="card sales">
+                            <div class="card-icon">
+                                <i class="fa fa-bar-chart"/>
+                            </div>
+                            <div class="card-title">Total Revenue</div>
+                            <div class="card-value">
+                                <field name="total_revenue" readonly="1"/>
+                            </div>
+                        </div>
+
+                        <div class="card cost">
+                            <div class="card-icon">
+                                <i class="fa fa-dollar"/>
+                            </div>
+                            <div class="card-title">Total Cost</div>
+                            <div class="card-value">
+                                <field name="total_cost" readonly="1"/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- 🔥 FILTER BUTTONS -->
+                    <div class="filter-bar">
+
+                        <button name="sort_by_sales"
+                                type="object"
+                                class="filter-btn sales">
+                            <i class="fa fa-arrow-down"/>
+                            Sales
+                        </button>
+
+                        <button name="sort_by_cost"
+                                type="object"
+                                class="filter-btn cost">
+                            <i class="fa fa-arrow-down"/>
+                            Cost
+                        </button>
+
+                    </div>
+                    <!-- 🔥 LIST -->
+                    <field name="line_ids">
+                        <list create="0" delete="0" write="0" default_order="sequence">
+                            <field name="name"/>
+                            <!--                            <field name="list_price" string="Sales Price"/>-->
+                            <field name="total_revenue" string="Total Revenue"/>
+                            <field name="standard_price" string="Cost"/>
+
+                            <button name="action_open_product_dashboard"
+                                    type="object"
+                                    icon="fa-line-chart"
+                                    string=""/>
+                        </list>
+                    </field>
+                    <button name="action_print_dashboard"
+                            type="object"
+                            class="modern-btn"
+                            string="Download Report">
+                    </button>
+                </div>
+
+            </form>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit CRM lead form to add project fields -->
+    <record id="view_crm_lead_form_inherit_project" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.project</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- try to place after the main details group; fallback to form -->
+            <xpath expr="//notebook" position="before">
+
+                <!-- حقل الاختيار -->
+                <group invisible="not is_arka_company">
+                    <field name="project_type"/>
+                    <field name="project_event_type"
+                           widget="radio"
+                           string="Project Category"
+                           invisible="not show_event_category"/>
+                </group>
+
+                <group string="process" invisible="not show_product_field or not is_arka_company">
+
+
+                    <field name="product_idd"/>
+                    <button name="action_open_bom"
+                            string="Create BOM"
+                            type="object"
+                            class="btn btn-primary"
+                            invisible="has_bom"/>
+
+                    <!-- Show BOM -->
+                    <button name="action_show_bom"
+                            string="Show BOM"
+                            type="object"
+                            class="btn btn-secondary"
+                            invisible="not has_bom"/>
+
+                    <!-- Price Field -->
+                    <field name="unit_cost_bom"
+                           nolabel="1"
+                           class="oe_inline"
+                    />
+                    <field name="margin" string="Margin (%)"/>
+
+
+                    <!-- Create Quotation -->
+                    <button name="action_create_quotation_from_lead"
+                            string="Create Quotation"
+                            type="object"
+                            class="btn btn-success"
+                            invisible="has_quotation"/>
+
+                </group>
+                <group string="Project Info"
+                       invisible="not show_project_info or not is_arka_company">
+
+                    <field name="won_text"/>
+                    <field name="project_id"/>
+
+                    <field name="project_manager_ids"
+                           widget="many2many_tags" options="{'color_field': 'color'}"
+                    />
+
+                    <field name="date_start"
+                           string="Planned Date"
+                           widget="daterange"
+                           options="{'end_date_field': 'date_end', 'always_range': '1'}"/>
+
+                    <field name="date_end" invisible="1"/>
+
+                </group>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+
+                <page string="BOM Informations"
+                      invisible="not show_event_tab">
+
+
+                    <group string="customer Requests">
+                        <field name="other_requests" placeholder="Write extra requirements here..."/>
+                    </group>
+
+                </page>
+                <page string="Gift Information"
+                      invisible="not show_gift_tab">
+
+                    <group string="Gift Details">
+                        <field name="gift_count"/>
+                        <field name="gift_item_ids"
+                               widget="many2many_tags"
+                        />
+                    </group>
+
+                    <group string="customer Requests">
+                        <field name="other_requests" placeholder="Write extra requirements here..."/>
+                    </group>
+
+                </page>
+                <page string="Both Information"
+                      invisible="not show_both_tab"
+                >
+
+                    <group string="Location Information">
+                        <field name="event_location"/>
+
+                        <field name="event_latitude"/>
+                        <field name="event_longitude"/>
+                    </group>
+
+                    <group string="customer Requests">
+                        <field name="other_requests" placeholder="Write extra requirements here..."/>
+                    </group>
+
+                </page>
+                <page string="Media"
+                      invisible="not show_media_tab">
+
+                    <label for="media_type" string="Info"/>
+                    <field name="media_type"
+                           placeholder="add media info"
+                           options="{'collaborative': true}"/>
+
+                </page>
+                <page string="لوحات"
+                      invisible="not show_product_field"
+                >
+
+                    <group string="لوحات المشروع">
+
+
+                        <!-- Group: Lighting -->
+                        <group string="الإضاءة">
+                            <field name="board_light_type" widget="radio"/>
+
+                            <field name="acrylic_code"/>
+                            <field name="acrylic_color"/>
+
+                            <field name="light_code"/>
+                            <field name="light_color"/>
+                            <field name="light_type_detail"/>
+                        </group>
+
+                        <!-- Group: مواد الواجهة -->
+                        <group string="مواد الواجهة">
+                            <field name="cladding_code"/>
+                            <field name="cladding_color"/>
+
+                            <field name="board_background"/>
+                        </group>
+
+                        <!-- Group: الأبعاد والمرفقات -->
+                        <group string="الأبعاد و المرفقات">
+                            <field name="board_height"/>
+                            <field name="board_size"/>
+
+                            <field name="board_attachment_image" widget="image"/>
+                        </group>
+
+                        <field name="final_product_description"
+                               placeholder="اكتب تفاصيل اللوحات هنا..."/>
+                    </group>
+
+                </page>
+            </xpath>
+
+
+        </field>
+    </record>
+
+</odoo>

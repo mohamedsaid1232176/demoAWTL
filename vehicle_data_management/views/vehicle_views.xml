@@ -1,0 +1,141 @@
+<odoo>
+
+    <!-- ======================================================== -->
+    <!--                       LIST VIEW                          -->
+    <!-- ======================================================== -->
+    <record id="view_vehicle_data_list" model="ir.ui.view">
+        <field name="name">vehicle.data.list</field>
+        <field name="model">vehicledata</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="vehicle_number"/>
+                <field name="vehicle_name"/>
+                <field name="company_id"/>
+                <field name="vehicle_type_id"/>
+                <field name="device_type_id"/>
+                <field name="install_date"/>
+                <field name="expiry_date"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ======================================================== -->
+    <!--                       FORM VIEW                          -->
+    <!-- ======================================================== -->
+    <record id="view_vehicle_data_form" model="ir.ui.view">
+        <field name="name">vehicle.data.form</field>
+        <field name="model">vehicledata</field>
+        <field name="arch" type="xml">
+            <form>
+
+                <!-- HEADER TITLE -->
+
+
+                <sheet>
+
+                    <header>
+                        <h1>
+                            <field name="name" placeholder="New Equipment"/>
+                        </h1>
+                    </header>
+                    <!-- TOP SUMMARY SECTION -->
+                    <group>
+                        <group>
+                            <field name="vehicle_number"/>
+                            <field name="arabic_vehicle_number"/>
+                            <field name="vehicle_name"/>
+                            <field name="company_id"/>
+                        </group>
+
+                        <group>
+                            <field name="vehicle_type_id"/>
+                            <field name="brand"/>
+                            <field name="driver"/>
+                            <field name="driver_mobile_no"/>
+                        </group>
+                    </group>
+
+                    <!-- NOTEBOOK TABS -->
+                    <notebook>
+
+                        <!-- USER INFO TAB -->
+                        <page string="User Info">
+                            <group>
+                                <group>
+                                    <field name="username"/>
+                                    <field name="password"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- DEVICE INFO TAB -->
+                        <page string="Device Info">
+                            <group>
+                                <group>
+                                    <field name="device_type_id"/>
+                                    <field name="imei"/>
+                                    <field name="sim_no"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- INSTALLATION INFO TAB -->
+                        <page string="Installation">
+                            <group>
+                                <group>
+                                    <field name="install_date"/>
+                                    <field name="installation_type_id"/>
+                                    <field name="expiry_date"/>
+                                </group>
+
+                                <group>
+                                    <field name="status" widget="radio"/>
+                                    <field name="installer"/>
+                                    <field name="installed_location_id"/>
+                                    <field name="base_location"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ADDITIONAL INFO TAB -->
+                        <page string="Additional Info">
+                            <group>
+                                <group>
+                                    <field name="location"/>
+                                    <field name="renewed_at"/>
+                                </group>
+                            </group>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================== -->
+    <!--                        ACTION                             -->
+    <!-- ======================================================== -->
+    <record id="action_vehicle_data" model="ir.actions.act_window">
+        <field name="name">Equipment Management</field>
+        <field name="res_model">vehicledata</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ======================================================== -->
+    <!--                       MENU ITEMS                          -->
+    <!-- ======================================================== -->
+    <menuitem id="menu_vehicle_root" name="Equipment" sequence="1"/>
+
+    <menuitem id="menu_vehicle_data"
+              parent="menu_vehicle_root"
+              name="Equipment Management"
+              action="action_vehicle_data"
+              sequence="10"/>
+
+
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+    ============================================================
+    ✅ Contacts Access Tab — User Form
+    ============================================================
+    -->
+    <record id="view_users_form_contacts_access" model="ir.ui.view">
+        <field name="name">res.users.form.contacts.access</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Contacts Access">
+
+                    <!-- Contacts Visibility -->
+                    <group string="Contacts Visibility">
+                        <field name="contact_access_level" widget="radio"/>
+                    </group>
+
+                    <!-- Sales Approval -->
+                    <group string="Sales Approval">
+                        <field name="can_confirm_sale"/>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

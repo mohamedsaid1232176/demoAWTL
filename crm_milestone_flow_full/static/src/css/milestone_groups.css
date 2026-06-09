@@ -1,0 +1,106 @@
+/* Main card */
+.milestone-box {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #dcdcdc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Header */
+.milestone-box-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon {
+    font-size: 22px;
+}
+
+/* title text */
+.milestone-box-header h3 {
+    padding: 0 0 5px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* bottom line */
+.milestone-line {
+    width: 100%;
+    height: 3px;
+    background: #4a90e2;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+/* Table blocks */
+.table-block {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    background: #fafafa;
+    transition: 0.25s;
+}
+.btn-green {
+    background-color: #28a745 !important;
+    color: white !important;
+    border-radius: 4px !important;
+}
+
+.service-button-row {
+    margin-top: 24px;
+    margin-bottom: 10px;
+}
+
+.btn-service {
+    background-color: #7c3aed !important;
+    border-color: #7c3aed !important;
+    color: white !important;
+}
+
+.table-block:hover {
+    border-color: #4a90e2;
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2);
+}
+
+.table-block h4 {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Buttons with animation */
+.cool-btn {
+    padding: 6px 14px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    transition: 0.2s !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button hover animation */
+.cool-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+/* ripple effect on click */
+.cool-btn:active {
+    transform: scale(0.96);
+}
+
+/* Footer */
+.milestone-footer {
+    margin-top: 12px;
+    padding-top: 8px;
+    font-size: 12px;
+    text-align: right;
+    color: #777;
+}

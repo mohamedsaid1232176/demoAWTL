@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_services_selector_form" model="ir.ui.view">
+        <field name="name">services.selector.form</field>
+        <field name="model">wizard.services.selector</field>
+        <field name="arch" type="xml">
+            <form string="Select Services">
+                <group>
+                    <field name="product_ids"
+                        domain="[
+                            ('product_tmpl_id.milestone_ids','in',[context.get('default_milestone_id')]),
+                            ('product_tmpl_id.type','=','service')
+                        ]"
+                    >
+
+                        <list editable="bottom" string="service">
+
+                            <!-- نفس الحقول اللي في Products Tree View -->
+                            <field name="default_code"/>
+                            <field name="name"/>
+                            <field name="list_price"/>
+                            <field name="standard_price"/>
+                            <field name="qty_available"/>
+                            <field name="virtual_available"/>
+
+                        </list>
+
+                    </field>
+                </group>
+
+                <footer>
+                    <button name="action_add_services" string="Add" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

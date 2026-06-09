@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_mostakhlas_line_user,purchase.mostakhlas.line user,model_purchase_mostakhlas_line,,1,1,1,0
+access_mostakhlas_type_user,access.mostakhlas.type.user,model_mostakhlas_type,,1,1,1,1
+access_mostakhlas_print_buffer,access_mostakhlas_print_buffer,model_mostakhlas_print_buffer,,1,1,1,1
+access_mostakhlas_wizard,access_mostakhlas_wizard,model_mostakhlas_wizard,,1,1,1,1
+

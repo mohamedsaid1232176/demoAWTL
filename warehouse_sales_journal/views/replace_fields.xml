@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_order_form_move_warehouse_final" model="ir.ui.view">
+        <field name="name">sale.order.form.move.warehouse.final</field>
+        <field name="model">sale.order</field>
+
+        <!-- ⚠️ inherit من sale_stock -->
+        <field name="inherit_id"
+               ref="sale_stock.view_order_form_inherit_sale_stock"/>
+
+        <field name="arch" type="xml">
+
+            <!-- 1️⃣ حذف الـ warehouse الظاهر -->
+            <xpath expr="//field[@name='warehouse_id' and not(@invisible)]"
+                   position="replace"/>
+
+            <!-- 2️⃣ الإبقاء على hidden warehouse للـ JS (نخليه invisible بس) -->
+            <xpath expr="//field[@name='warehouse_id' and @invisible]"
+                   position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- 3️⃣ إضافته بعد شروط السداد -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="warehouse_id"
+                       options="{'no_create': True}"
+                       readonly="state in ['sale','cancel']"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+
+      <!-- =====================================================
+         Move Salesperson field (user_id)
+         ===================================================== -->
+
+    <record id="sale_order_form_move_salesperson" model="ir.ui.view">
+        <field name="name">sale.order.form.move.salesperson</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- 1️⃣ إخفاء Salesperson من مكانه الأصلي -->
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- 2️⃣ إضافته تحت Customer Tags مباشرة -->
+            <xpath expr="//field[@name='partner_tags']" position="after">
+                <field name="user_id"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

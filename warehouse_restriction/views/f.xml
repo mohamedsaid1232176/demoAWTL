@@ -1,0 +1,54 @@
+<odoo>
+
+    <record id="stock_picking_type_filter_allowed_wh" model="ir.ui.view">
+        <field name="name">stock.picking.type.filter.allowed.warehouses</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_pickingtype_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter
+                    name="my_allowed_warehouses"
+                    string="My Warehouses"
+                    domain="[('allowed_for_user', '=', True)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_move_line_filter_allowed" model="ir.ui.view">
+        <field name="name">stock.move.line.allowed.filter</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//search" position="inside">
+                <filter
+                    name="my_allowed_locations"
+                    string="My Allowed Warehouses"
+                    domain="[('allowed_for_user', '=', True)]"
+                />
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="location_filter_allowed" model="ir.ui.view">
+        <field name="name">stock.location.allowed.filter</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_search"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//search" position="inside">
+                <filter
+                    name="my_allowed_locations"
+                    string="My Allowed Locations"
+                    domain="[('allowed_for_user', '=', True)]"
+                />
+            </xpath>
+
+        </field>
+    </record>
+
+
+
+</odoo>

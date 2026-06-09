@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="purchase_order_form_arka_mostakhlas_tab" model="ir.ui.view">
+        <field name="name">purchase.order.form.arka.mostakhlas.tab</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- زر إنشاء المستخلص -->
+            <xpath expr="//header" position="inside">
+                <button name="action_open_mostakhlas_tab"
+                        string="Make mostakhlas"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not is_arka_company"/>
+
+            </xpath>
+
+            <!-- Tab المستخلص -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Mostakhlas"
+                      name="mostakhlas_tab"
+                      invisible="not show_mostakhlas_tab">
+
+                    <field name="mostakhlas_line_ids" editable="bottom">
+                        <list editable="bottom">
+
+                            <field name="sequence_int" optional="show" readonly="1"/>
+                            <field name="product_id" optional="show" readonly="1"/>
+                            <field name="name" optional="show" readonly="1"/>
+                            <field name="mostakhlas_type_id"/>
+                            <field name="date_planned" optional="hide" readonly="1"/>
+                            <field name="product_qty" optional="show" readonly="1"/>
+                            <field name="product_uom" optional="show" readonly="1"/>
+                            <field name="price_unit" optional="show" readonly="1"/>
+                            <field name="progress_percent" attrs="{'readonly': [('is_progress_locked','=',True)]}"/>
+                            <field name="done_progress" string="Progress Done %" readonly="1"/>
+
+                            <field name="discount" optional="hide" readonly="1"/>
+                            <field name="taxes_id" widget="many2many_tags" readonly="1" optional="show"/>
+                            <field name="price_subtotal" optional="show" readonly="1"/>
+                            <field name="print_in_report"/>
+
+                        </list>
+                    </field>
+
+                    <!-- Totals -->
+                    <group class="oe_subtotal_footer">
+                        <field name="mostakhlas_untaxed" readonly="1"/>
+                        <field name="mostakhlas_tax" readonly="1"/>
+                        <field name="mostakhlas_total" readonly="1"/>
+                        <separator string=""/>
+
+                        <field name="executed_contract_value" readonly="1"/>
+                        <field name="executed_contract_value_vat" readonly="1"/>
+                    </group>
+
+                </page>
+
+
+                <!-- Tab Vendor Payments -->
+                <page string="Vendor Payments" invisible="not show_mostakhlas_tab">
+
+                    <field name="payment_ids">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="state"/>
+                            <field name="amount"/>
+                            <field name="is_used_in_mostakhlas" readonly="1"/>
+
+                        </list>
+                    </field>
+
+                    <group class="oe_subtotal_footer">
+<!--                        <field name="vendor_payment_total" readonly="1"/>-->
+<!--                        <field name="vendor_payment_total_paid" readonly="1"/>-->
+<!--                        <field name="vendor_payment_total_paid_in_mostkhlas" readonly="1"/>-->
+                        <field name="vendor_payment_total_all" readonly="1"/>
+
+                    </group>
+
+                </page>
+
+
+                <page string="Important Data">
+                    <group string="Project Manager">
+                        <field name="project_manager"/>
+                    </group>
+
+                    <group string="Technical Office">
+                        <field name="technical_office_manager"/>
+                    </group>
+
+                    <group string="Operations Manager">
+                        <field name="operations_manager"/>
+                    </group>
+
+                    <group string="Subcontractor">
+                        <field name="subcontractor_name"/>
+                        <field name="date_subcontractor"/>
+                    </group>
+                </page>
+
+            </xpath>
+
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sequence" string="sequence" readonly="1"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

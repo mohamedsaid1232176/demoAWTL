@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_sale_mostakhlas" model="ir.actions.report">
+        <field name="name">طباعه مستخلص</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">arka_mostakhlas.report_sale_mostakhlas</field>
+        <field name="report_file">arka_mostakhlas.report_sale_mostakhlas</field>
+        <field name="print_report_name">'Work Progress - %s' % (object.name or '')</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_sale_mostakhlas">
+        <t t-name="arka_mostakhlas.report_sale_mostakhlas">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-foreach="docs" t-as="o">
+                        <style>
+                            /* ================================================== */
+                            /* SIMPLE &amp; CLEAN - MINIMAL DESIGN                    */
+                            /* ================================================== */
+                            * {
+                                margin: 0;
+                                padding: 0;
+                                box-sizing: border-box;
+                            }
+
+                            body {
+                                background: #eef2f5;
+                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Cairo', 'Roboto', sans-serif;
+                                font-size: 9.5px;
+                                direction: rtl;
+                                padding: 40px 0;
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+
+                            /* MAIN DOCUMENT */
+                            .invoice-document {
+                                max-width: 1100px;
+                                margin: 0 auto;
+                                background: #ffffff;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+                                overflow: hidden;
+                            }
+
+                            /* ========== HEADER ========== */
+                            .header-section {
+                                padding: 28px 32px 20px;
+                                border-bottom: 2px solid #e8edf2;
+                                background: #ffffff;
+                            }
+
+                            .header-flex {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                gap: 30px;
+                            }
+
+                            .logo-box {
+                                flex-shrink: 0;
+                            }
+
+                            .logo-box img {
+                                max-height: 55px;
+                                max-width: 75px;
+                            }
+
+                            .logo-placeholder {
+                                font-size: 12px;
+                                font-weight: 600;
+                                color: #2c6e9e;
+                                background: #f0f4f8;
+                                padding: 10px 16px;
+                                border-radius: 10px;
+                            }
+
+                            .title-box {
+                                flex: 1;
+                                text-align: center;
+                            }
+
+                            .title-ar {
+                                font-size: 24px;
+                                font-weight: 700;
+                                color: #1a3a4f;
+                                letter-spacing: 1px;
+                            }
+
+                            .title-en {
+                                font-size: 9px;
+                                letter-spacing: 3px;
+                                color: #7c8b9c;
+                                text-transform: uppercase;
+                                margin-top: 5px;
+                            }
+
+                            .company-name {
+                                font-size: 8px;
+                                color: #9aaebf;
+                                margin-top: 6px;
+                            }
+
+                            .seq-badge {
+                                background: #f0f4f8;
+                                padding: 10px 20px;
+                                border-radius: 12px;
+                                text-align: center;
+                            }
+
+                            .seq-label {
+                                font-size: 7px;
+                                font-weight: 600;
+                                color: #5a6e7c;
+                                letter-spacing: 1px;
+                            }
+
+                            .seq-number {
+                                font-size: 18px;
+                                font-weight: 800;
+                                color: #1a3a4f;
+                                font-family: 'Courier New', monospace;
+                                display: block;
+                                margin-top: 3px;
+                            }
+
+                            /* ========== PAYMENT CARD ========== */
+                            .payment-card {
+                                background: #f8fafc;
+                                margin: 0 32px 24px;
+                                padding: 18px 24px;
+                                border-radius: 14px;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                border: 1px solid #e2e8f0;
+                            }
+
+                            .payee h4 {
+                                font-size: 7px;
+                                font-weight: 600;
+                                color: #7c8b9c;
+                                letter-spacing: 1.5px;
+                                margin-bottom: 6px;
+                            }
+
+                            .payee-name {
+                                font-size: 16px;
+                                font-weight: 700;
+                                color: #1a3a4f;
+                            }
+
+                            .amount h4 {
+                                font-size: 7px;
+                                font-weight: 600;
+                                color: #7c8b9c;
+                                letter-spacing: 1.5px;
+                                text-align: center;
+                                margin-bottom: 6px;
+                            }
+
+                            .amount-number {
+                                font-size: 28px;
+                                font-weight: 800;
+                                color: #2c6e9e;
+                                font-family: 'Courier New', monospace;
+                                text-align: center;
+                            }
+
+                            .amount-currency {
+                                font-size: 9px;
+                                color: #7c8b9c;
+                                text-align: center;
+                                margin-top: 3px;
+                            }
+
+                            /* ========== BODY ========== */
+                            .body-content {
+                                padding: 0 32px 32px;
+                            }
+
+                            /* SECTION TITLES */
+                            .section-title {
+                                display: flex;
+                                align-items: center;
+                                gap: 12px;
+                                margin: 28px 0 16px;
+                            }
+
+                            .section-title:first-of-type {
+                                margin-top: 0;
+                            }
+
+                            .title-line {
+                                flex: 1;
+                                height: 1px;
+                                background: #e2e8f0;
+                            }
+
+                            .title-text {
+                                font-size: 10px;
+                                font-weight: 700;
+                                color: #4a6272;
+                                letter-spacing: 1.5px;
+                                text-transform: uppercase;
+                                white-space: nowrap;
+                            }
+
+                            /* INFO GRID */
+                            .info-grid {
+                                background: #fafcff;
+                                border-radius: 14px;
+                                padding: 18px 22px;
+                                border: 1px solid #eef2f8;
+                                margin-bottom: 8px;
+                            }
+
+                            .grid-3cols {
+                                display: grid;
+                                grid-template-columns: repeat(3, 1fr);
+                                gap: 14px 28px;
+                            }
+
+                            .info-row {
+                                display: flex;
+                                align-items: baseline;
+                                gap: 8px;
+                                padding: 5px 0;
+                            }
+
+                            .info-label {
+                                font-weight: 700;
+                                color: #6c7e8e;
+                                font-size: 8.5px;
+                                min-width: 80px;
+                            }
+
+                            .info-value {
+                                color: #1a2e3f;
+                                font-weight: 500;
+                                font-size: 9.5px;
+                                flex: 1;
+                            }
+
+                            /* ========== ITEMS TABLE (CLEAN) ========== */
+                            .table-container {
+                                border-radius: 14px;
+                                border: 1px solid #eef2f8;
+                                overflow: hidden;
+                                margin: 16px 0;
+                            }
+
+                            .items-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: 9px;
+                            }
+
+                            .items-table thead {
+                                background: #f8fafc;
+                            }
+
+                            .items-table thead th {
+                                padding: 12px 8px;
+                                text-align: center;
+                                font-weight: 700;
+                                font-size: 8.5px;
+                                color: #4a6272;
+                                letter-spacing: 0.5px;
+                                border-bottom: 2px solid #e2e8f0;
+                                border-right: 1px solid #edf2f7;
+                            }
+
+                            .items-table thead th:first-child {
+                                border-right: none;
+                            }
+
+                            .items-table tbody tr {
+                                border-bottom: 1px solid #f0f4f9;
+                }
+
+                            .items-table tbody tr:nth-child(even) {
+                                background: #fefefe;
+                            }
+
+                            .items-table tbody td {
+                                padding: 11px 6px;
+                                text-align: center;
+                                color: #334e68;
+                                border-left: 1px solid #f0f4f9;
+                            }
+
+                            .items-table td.desc-cell {
+                                text-align: right;
+                                font-weight: 600;
+                                color: #1a3a4f;
+                            }
+
+                            .items-table td.number-cell {
+                                font-family: 'Courier New', monospace;
+                                font-weight: 500;
+                            }
+
+                            .items-table td.executed-cell {
+                                font-family: 'Courier New', monospace;
+                                font-weight: 700;
+                                color: #2c6e9e;
+                                background: #f0f9ff;
+                            }
+
+                            /* PROGRESS BARS - SIMPLE */
+                            .progress-wrapper {
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                justify-content: center;
+                            }
+
+                            .progress-bg {
+                                width: 60px;
+                                height: 5px;
+                                background: #e2e8f0;
+                                border-radius: 4px;
+                                overflow: hidden;
+                            }
+
+                            .progress-gold {
+                                height: 100%;
+                                background: #c9a03d;
+                                border-radius: 4px;
+                            }
+
+                            .progress-green {
+                                height: 100%;
+                                background: #3b8b5e;
+                                border-radius: 4px;
+                            }
+
+                            .progress-text {
+                                font-size: 8px;
+                                font-weight: 600;
+                                min-width: 36px;
+                                text-align: left;
+                            }
+
+                            .gold-text {
+                                color: #b8892a;
+                            }
+
+                            .green-text {
+                                color: #3b8b5e;
+                            }
+
+                            /* ========== TOTALS PANEL (SIMPLE) ========== */
+                            .totals-panel {
+                                margin: 24px 0;
+                                border-radius: 14px;
+                                border: 1px solid #eef2f8;
+                                overflow: hidden;
+                            }
+
+                            .totals-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+
+                            .totals-table td {
+                                padding: 12px 24px;
+                                border-bottom: 1px solid #f0f4f9;
+                            }
+
+                            .totals-label {
+                                background: #fafcff;
+                                font-weight: 600;
+                                font-size: 9.5px;
+                                color: #4a6272;
+                                text-align: right;
+                                width: 65%;
+                            }
+
+                            .totals-value {
+                                text-align: center;
+                                font-family: 'Courier New', monospace;
+                                font-weight: 700;
+                                font-size: 11px;
+                                color: #1a3a4f;
+                                width: 35%;
+                            }
+
+                            .vat-label {
+                                color: #2c6e9e;
+                            }
+
+                            .vat-value {
+                                color: #2c6e9e;
+                            }
+
+                            .net-label {
+                                font-weight: 800;
+                                font-size: 10.5px;
+                                color: #1a4a3a;
+                            }
+
+                            .net-value {
+                                font-weight: 900;
+                                font-size: 15px;
+                                color: #2c7a5e;
+                            }
+
+                            /* ========== SIGNATURES ========== */
+                            .confirm-bar {
+                                background: #f8fafc;
+                                border-radius: 12px;
+                                padding: 12px 20px;
+                                text-align: center;
+                                margin: 20px 0;
+                                border: 1px solid #eef2f8;
+                            }
+
+                            .confirm-bar p {
+                                font-size: 8.5px;
+                                color: #6c7e8e;
+                                font-weight: 500;
+                            }
+
+                            .signatures-grid {
+                                display: grid;
+                                grid-template-columns: repeat(3, 1fr);
+                                gap: 18px;
+                                margin-top: 16px;
+                            }
+
+                            .sign-card {
+                                border: 1px solid #eef2f8;
+                                border-radius: 14px;
+                                overflow: hidden;
+                                background: #ffffff;
+                            }
+
+                            .sign-header {
+                                background: #f8fafc;
+                                padding: 10px;
+                                text-align: center;
+                                font-size: 9px;
+                                font-weight: 700;
+                                color: #4a6272;
+                                border-bottom: 1px solid #eef2f8;
+                            }
+
+                            .sign-header.client {
+                                background: #f0f4f8;
+                                color: #2c6e9e;
+                            }
+
+                            .sign-body {
+                                padding: 14px;
+                                font-size: 8.5px;
+                                line-height: 2.2;
+                                color: #4a6272;
+                            }
+
+                            .sign-label {
+                                font-weight: 700;
+                                color: #7c8b9c;
+                            }
+
+                            /* ========== FOOTER ========== */
+                            .footer-section {
+                                background: #fafcff;
+                                padding: 14px 32px;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                border-top: 1px solid #eef2f8;
+                            }
+
+                            .micr-code {
+                                font-family: 'Courier New', monospace;
+                                font-size: 9px;
+                                letter-spacing: 2px;
+                                color: #9aaebf;
+                            }
+
+                            .footer-date {
+                                font-size: 7px;
+                                color: #b3c0cd;
+                                margin-top: 3px;
+                            }
+
+                            .footer-address {
+                                font-size: 7.5px;
+                                color: #9aaebf;
+                                text-align: left;
+                            }
+
+                            /* PRINT */
+                            @media print {
+                                body {
+                                    background: white;
+                                    padding: 0;
+                                }
+                                .invoice-document {
+                                    box-shadow: none;
+                                    border-radius: 0;
+                                }
+                            }
+                        </style>
+
+                        <div class="invoice-document">
+
+                            <!-- HEADER -->
+                            <div class="header-section">
+                                <div class="header-flex">
+                                    <div class="logo-box">
+                                        <t t-if="o.company_id.logo">
+                                            <img t-att-src="'data:image/png;base64,%s' % o.company_id.logo.decode()" alt="Logo"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="logo-placeholder">
+                                                <t t-esc="o.company_id.name[:3]"/>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    <div class="title-box">
+                                        <div class="title-ar">مستخلص أعمال</div>
+                                        <div class="title-en">Work Progress Invoice</div>
+                                        <div class="company-name"><t t-esc="o.company_id.name"/></div>
+                                    </div>
+                                    <div class="seq-badge">
+                                        <div class="seq-label">رقم المستخلص</div>
+                                        <strong class="seq-number"><t t-esc="o.mostakhlas_sequence or '——'"/></strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PAYMENT SUMMARY -->
+                            <div class="payment-card">
+                                <div class="payee">
+                                    <h4>ادفع لأمر / PAY TO THE ORDER OF</h4>
+                                    <div class="payee-name"><t t-esc="o.partner_id.name or '——————————————————'"/></div>
+                                </div>
+                                <div class="amount">
+                                    <h4>المستحق تحصيله / NET DUE</h4>
+                                    <div class="amount-number"><t t-esc="'%.2f' % ((o.executed_contract_value_vat or 0) - (o.sale_payment_total_all or 0))"/></div>
+                                    <div class="amount-currency"><t t-esc="o.currency_id.symbol or o.currency_id.name or ''"/></div>
+                                </div>
+                            </div>
+
+                            <div class="body-content">
+
+                                <!-- SECTION 1: DETAILS -->
+                                <div class="section-title">
+                                    <div class="title-line"></div>
+                                    <div class="title-text">بيانات المستخلص | Invoice Details</div>
+                                    <div class="title-line"></div>
+                                </div>
+
+                                <div class="info-grid">
+                                    <div class="grid-3cols">
+                                        <div class="info-row"><span class="info-label">رقم أمر البيع:</span><span class="info-value"><t t-esc="o.name or '—'"/></span></div>
+                                        <div class="info-row"><span class="info-label">تاريخ المستخلص:</span><span class="info-value"><t t-esc="o.date_mostakhlas or '—'"/></span></div>
+                                        <div class="info-row"><span class="info-label">تاريخ أمر البيع:</span><span class="info-value"><t t-esc="o.date_order and o.date_order.strftime('%Y-%m-%d') or '—'"/></span></div>
+                                        <div class="info-row"><span class="info-label">المشروع:</span><span class="info-value"><t t-esc="o.project_id.name or '—'"/></span></div>
+                                        <div class="info-row"><span class="info-label">نوع المستخلص:</span><span class="info-value"><t t-esc="o.mostakhlas_line_ids[:1].mostakhlas_type_id.name or '—'"/></span></div>
+                                        <div class="info-row"><span class="info-label">مرجع العميل:</span><span class="info-value"><t t-esc="o.client_order_ref or '—'"/></span></div>
+                                    </div>
+                                </div>
+
+                                <!-- SECTION 2: WORK ITEMS -->
+                                <div class="section-title">
+                                    <div class="title-line"></div>
+                                    <div class="title-text">بنود الأعمال | Work Items</div>
+                                    <div class="title-line"></div>
+                                </div>
+
+                                <div class="table-container">
+                                    <table class="items-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:4%">#</th>
+                                                <th style="width:26%; text-align:right;">البند</th>
+                                                <th style="width:7%">الوحدة</th>
+                                                <th style="width:8%">كمية العقد</th>
+                                                <th style="width:8%">سعر الوحدة</th>
+                                                <th style="width:10%">إجمالي العقد</th>
+                                                <th style="width:13%">النسبة الحالية</th>
+                                                <th style="width:14%">القيمة المنفذة</th>
+                                                <th style="width:14%">ملاحظات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="buffer" t-value="env['sale.mostakhlas.print.buffer'].search([('order_id','=',o.id)])"/>
+                                            <t t-foreach="buffer" t-as="b">
+                                                <t t-set="l" t-value="b.line_id"/>
+                                                <t t-set="curr_pct" t-value="l.progress_percent or 0"/>
+                                                <t t-set="done_pct" t-value="curr_pct"/>
+                                                <t t-set="contract_tot" t-value="(l.product_qty or 0) * (l.price_unit or 0)"/>
+                                                <t t-set="exec_val" t-value="contract_tot * (done_pct / 100.0)"/>
+                                                <t t-set="cw" t-value="str(int(min(curr_pct, 100)))"/>
+                                                <tr>
+                                                    <td class="number-cell"><t t-esc="l.sequence_int"/></td>
+                                                    <td class="desc-cell"><t t-esc="l.product_id.display_name or l.name or '—'"/></td>
+                                                    <td class="number-cell"><t t-esc="l.product_uom.name or ''"/></td>
+                                                    <td class="number-cell"><t t-esc="'%.2f' % (l.product_qty or 0)"/></td>
+                                                    <td class="number-cell"><t t-esc="'%.2f' % (l.price_unit or 0)"/></td>
+                                                    <td class="number-cell"><t t-esc="'%.2f' % contract_tot"/></td>
+                                                    <td>
+                                                        <div class="progress-wrapper">
+                                                            <div class="progress-bg"><div class="progress-green" t-att-style="'width:' + cw + '%'"></div></div>
+                                                            <span class="progress-text green-text"><t t-esc="'%.1f' % curr_pct"/>%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="executed-cell"><t t-esc="'%.2f' % exec_val"/> </td>
+                                                    <td class="notes-cell"><t t-esc="l.name or ''"/> </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- SECTION 3: TOTALS -->
+                                <div class="section-title">
+                                    <div class="title-line"></div>
+                                    <div class="title-text">الإجماليات | Totals</div>
+                                    <div class="title-line"></div>
+                                </div>
+
+                                <div class="totals-panel">
+                                    <table class="totals-table">
+                                        <tr>
+                                            <td class="totals-label">إجمالي قيمة الأعمال التعاقدية المنفذة</td>
+                                            <td class="totals-value"><t t-esc="'%.2f' % (o.executed_contract_value or 0)"/> <t t-esc="o.currency_id.symbol or ''"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totals-label vat-label">إجمالي قيمة الأعمال المنفذة شامل الضريبة (15%)</td>
+                                            <td class="totals-value vat-value"><t t-esc="'%.2f' % (o.executed_contract_value_vat or 0)"/> <t t-esc="o.currency_id.symbol or ''"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totals-label">إجمالي المدفوعات المحصلة / Total Collected</td>
+                                            <td class="totals-value"><t t-esc="'%.2f' % (o.sale_payment_total_all or 0)"/> <t t-esc="o.currency_id.symbol or ''"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totals-label net-label">✓ المستحق تحصيله — Net Amount Due</td>
+                                            <td class="totals-value net-value"><t t-esc="'%.2f' % ((o.executed_contract_value_vat or 0) - (o.sale_payment_total_all or 0))"/> <t t-esc="o.currency_id.symbol or ''"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <!-- SECTION 4: SIGNATURES -->
+                                <div class="section-title">
+                                    <div class="title-line"></div>
+                                    <div class="title-text">التأكيد والتوقيعات | Signatures</div>
+                                    <div class="title-line"></div>
+                                </div>
+
+                                <div class="confirm-bar">
+                                    <p>✦ أؤكد بأن جميع الكميات المدرجة أعلاه صحيحة ومطابقة للواقع — Quantities verified per attached engineering measurements ✦</p>
+                                </div>
+
+                                <div class="signatures-grid">
+                                    <div class="sign-card">
+                                        <div class="sign-header client">العميل / Client</div>
+                                        <div class="sign-body">
+                                            <span class="sign-label">الاسم:</span> <t t-esc="o.client_name or '.......................'"/><br/>
+                                            <span class="sign-label">التاريخ:</span> <t t-esc="o.date_client or '.......................'"/><br/>
+                                            <span class="sign-label">التوقيع:</span> .......................
+                                        </div>
+                                    </div>
+                                    <div class="sign-card">
+                                        <div class="sign-header">مدير المشروع / Project Manager</div>
+                                        <div class="sign-body">
+                                            <span class="sign-label">الاسم:</span> <t t-esc="o.project_manager or '.......................'"/><br/><br/>
+                                            <span class="sign-label">التوقيع:</span> .......................
+                                        </div>
+                                    </div>
+                                    <div class="sign-card">
+                                        <div class="sign-header">مدير العمليات / Operations Manager</div>
+                                        <div class="sign-body">
+                                            <span class="sign-label">الاسم:</span> <t t-esc="o.operations_manager or '.......................'"/><br/><br/>
+                                            <span class="sign-label">التوقيع:</span> .......................
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FOOTER -->
+                            <div class="footer-section">
+                                <div>
+                                    <div class="micr-code">⑆ <t t-esc="o.mostakhlas_sequence or '———'"/> ⑆ <t t-esc="o.name or ''"/> ⑈ <t t-esc="o.company_id.name or ''"/> ⑉</div>
+                                    <div class="footer-date"><t t-esc="o.date_mostakhlas or ''"/></div>
+                                </div>
+                                <div class="footer-address"><t t-esc="o.company_id.street or ''"/> <t t-esc="o.company_id.city or ''"/></div>
+                            </div>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

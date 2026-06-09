@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_crm_milestone_line,access_crm_milestone_line,model_crm_milestone_line,,1,1,1,1
+access_goods_wizard,access_goods_wizard,model_wizard_goods_selector,,1,0,1,0
+access_services_wizard,access_services_wizard,model_wizard_services_selector,,1,0,1,0
+access_replace_milestone_item_wizard,access_replace_milestone_item_wizard,model_wizard_replace_milestone_item,,1,1,1,0
+access_crm_milestone_group_user,access.crm.milestone.group.user,model_crm_milestone_group,,1,1,1,1
+access_wizard_create_po,access_wizard_create_po,model_wizard_create_po,,1,1,1,1
+access_wizard_create_job_order,wizard.create.job.order,model_wizard_create_job_order,,1,1,1,1
+access_milestone_account_config_user,milestone.account.config.user,model_milestone_account_config,,1,1,1,1
+access_milestone_internal_transfer_account,milestone.internal.transfer.account,model_milestone_internal_transfer_account,,1,1,1,1
+access_job_order_account_config,access_job_order_account_config,model_job_order_account_config,,1,1,1,1
+
+

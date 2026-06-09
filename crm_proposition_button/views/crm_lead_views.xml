@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_crm_stage_wizard" model="ir.actions.act_window">
+        <field name="name">Assign Users</field>
+        <field name="res_model">crm.stage.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_crm_lead_form_proposition_button" model="ir.ui.view">
+        <field name="name">crm.lead.form.proposition.button</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+
+                <!-- 🔹 Technical Office -->
+                <button name="%(action_crm_stage_wizard)d"
+                        type="action"
+                        string="Move to Technical Office"
+                        icon="fa-level-up"
+                        context="{'default_action_type': 'technical'}"
+                        invisible="not show_proposition_button or is_stage_technical"/>
+
+
+                <!-- 🔹 Projects Management -->
+                <button name="%(action_crm_stage_wizard)d"
+                        type="action"
+                        string="Move to Projects Management"
+                        icon="fa-level-up"
+                        context="{'default_action_type': 'project'}"
+                        invisible="not show_button_allowed or is_stage_project_management"/>
+
+
+                <!-- 🔹 Designer (بقى wizard زيهم 🔥) -->
+                <button name="%(action_crm_stage_wizard)d"
+                        type="action"
+                        string="Move to Designer"
+                        icon="fa-paint-brush"
+                        context="{'default_action_type': 'designer'}"
+                        invisible="not show_designer_button or is_stage_designer"/>
+
+            </xpath>
+        </field>
+    </record>
+    <record id="hide_standard_buttons_pm" model="ir.ui.view">
+        <field name="name">crm.lead.form.hide.standard.buttons.pm</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إخفاء كل الأزرار الموجودة في الهيدر -->
+            <xpath expr="//header/button" position="attributes">
+                <attribute name="invisible">hide_all_buttons_pm</attribute>
+            </xpath>
+
+            <!-- إخفاء باقي العناصر في الهيدر (مثل Won / Lost / Convert / New Quotation) -->
+            <xpath expr="//header/*" position="attributes">
+                <attribute name="invisible">hide_all_buttons_pm</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

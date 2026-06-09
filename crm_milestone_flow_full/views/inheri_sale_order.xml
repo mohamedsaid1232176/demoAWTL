@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="sale_order_milestone_tab" model="ir.ui.view">
+            <field name="name">sale.order.milestone.tab</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <field name="is_crm_custom_quotation" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//list//field[@name='price_unit']" position="after">
+                    <field name="line_update_state"
+                           string="Line Status"
+                           widget="badge"
+                           decoration-success="line_update_state == 'from_pipeline'"
+                           decoration-warning="line_update_state == 'replaced'"
+                           decoration-info="line_update_state == 'added_sale_order'"
+                           column_invisible="not parent.is_crm_custom_quotation"
+                           readonly="1"/>
+                </xpath>
+
+                <xpath expr="//sheet/notebook" position="inside">
+
+                    <page string="Milestone Groups" name="so_milestone_tab" invisible="not show_milestone_tab">
+
+                        <div class="milestone-box">
+
+                            <!-- عنوان -->
+                            <div class="milestone-box-header">
+                                <h3>Milestone Groups</h3>
+                                <div class="milestone-line"></div>
+                            </div>
+
+                            <!-- جدول المجموعات -->
+                            <field name="milestone_group_ids_proxy" create="false" delete="false" nolabel="1">
+                                <list>
+                                    <field name="milestone_id" readonly="1"/>
+                                    <field name="quantity" readonly="1"/>
+
+                                    <field name="total_goods_unit_price" readonly="1"
+                                           string="Goods Unit Price"/>
+                                    <field name="total_service_unit_price" readonly="1"
+                                           string="Service Unit Price"/>
+                                    <field name="total_sale_milestone" readonly="1" string="Total Sale (Milestone)"/>
+
+                                </list>
+
+                                <!-- FORM VIEW READ ONLY -->
+                                <form string="Milestone Group" create="false" delete="false">
+
+                                    <group>
+                                        <field name="milestone_id" readonly="1"/>
+                                        <field name="quantity" readonly="1"/>
+
+                                        <field name="planned_date_from"
+                                               readonly="1"
+                                               widget="daterange"
+                                               options="{'end_date_field': 'planned_date_to'}"/>
+
+                                        <div class="d-flex justify-content-center"
+                                             style="gap: 30px; margin-top: 10px;margin-bottom: 10px;">
+
+                                            <button name="action_open_po_wizard"
+                                                    type="object"
+                                                    string="Create Purchase Order"
+                                                    class="btn btn-primary"/>
+
+                                            <button name="action_open_job_order_wizard"
+                                                    type="object"
+                                                    string="Create Job Order"
+                                                    class="btn-green"/>
+
+                                        </div>
+
+
+                                    </group>
+
+
+                                    <h5 style="color: #b8860b; font-weight: bold; direction: rtl; text-align: center; margin-bottom: 20px;">
+                                        اذا لم يتم اختيار أي منتجات أو خدمات سيتم تنفيذ العمليات على كل
+                                        المنتجات أو الخدمات تلقائياً.
+
+                                    </h5>
+
+
+                                    <!-- GOODS CARD -->
+                                    <div class="button-row">
+                                        <button name="action_open_goods_popup"
+                                                type="object"
+                                                string="📦 Add New Goods"
+                                                class="btn-info cool-btn"/>
+                                    </div>
+
+                                    <div class="table-block">
+                                        <h4>📦 Goods</h4>
+                                        <field name="goods_line_ids">
+                                            <list editable="top">
+                                                <field name="current_stage" column_invisible="1"/>
+                                                <field name="product_id" readonly="1"/>
+                                                <field name="type" readonly="1"/>
+                                                <field name="manual_product_cost" readonly="1"/>
+                                                <field name="pricing_method" readonly="1"/>
+                                                <field name="pricelist_id"
+                                                       invisible="pricing_method != 'pricelist'"
+                                                       readonly="1"/>
+                                                <field name="pricelist_sale_price"
+                                                       string="Sale Price"
+                                                       invisible="current_stage == 'technical' or pricing_method != 'pricelist'"
+                                                       readonly="1"/>
+                                                <field name="qty" readonly="1"/>
+                                                <field name="delivered_quantity" readonly="1"/>
+
+                                                <field name="margin"
+                                                       invisible="current_stage == 'technical' or pricing_method != 'margin'"
+                                                       readonly="1"/>
+                                                <field name="unit_price"
+                                                       invisible="current_stage == 'technical'" readonly="1"/>
+                                                <field name="selected_for_po"/>
+                                                <button name="action_open_replace_item_wizard"
+                                                        type="object"
+                                                        string="Replace &amp; Modify"
+                                                        class="btn-link"/>
+                                                <field name="line_update_state"
+                                                       widget="badge"
+                                                       decoration-success="line_update_state == 'from_pipeline'"
+                                                       decoration-warning="line_update_state == 'replaced'"
+                                                       decoration-info="line_update_state == 'added_sale_order'"
+                                                       readonly="1"/>
+                                            </list>
+                                        </field>
+
+                                        <h3>Goods Totals</h3>
+                                        <div class="o_form_label o_td_label"
+                                             style="padding:12px; border:1px solid #d9d9d9; border-radius:6px; margin-bottom:15px; background:#fafafa;">
+                                            <group col="3">
+                                                <field name="total_goods_cost" readonly="1"/>
+                                                <field name="total_goods_unit_price" readonly="1"/>
+                                                <field name="total_goods_sale" readonly="1"/>
+                                            </group>
+                                        </div>
+                                    </div>
+
+                                    <!-- SERVICES CARD -->
+                                    <div class="button-row service-button-row">
+                                        <button name="action_open_services_popup"
+                                                type="object"
+                                                string="🛠 Add New Service"
+                                                class="btn-service cool-btn"/>
+                                    </div>
+
+                                    <div class="table-block">
+                                        <h4>🛠 Services</h4>
+                                        <field name="service_line_ids">
+                                            <list editable="top">
+                                                <field name="current_stage" column_invisible="1"/>
+                                                <field name="product_id" readonly="1"/>
+                                                <field name="type" readonly="1"/>
+                                                <field name="manual_product_cost" readonly="1"/>
+                                                <field name="pricing_method" readonly="1"/>
+                                                <field name="pricelist_id"
+                                                       invisible="pricing_method != 'pricelist'"
+                                                       readonly="1"/>
+                                                <field name="pricelist_sale_price"
+                                                       string="Sale Price"
+                                                       invisible="current_stage == 'technical' or pricing_method != 'pricelist'"
+                                                       readonly="1"/>
+                                                <field name="qty" readonly="1"/>
+                                                <field name="margin"
+                                                       invisible="current_stage == 'technical' or pricing_method != 'margin'"
+                                                       readonly="1"/>
+                                                <field name="unit_price"
+                                                       invisible="current_stage == 'technical'" readonly="1"/>
+                                                <field name="selected_for_po"/>
+                                                <button name="action_open_replace_item_wizard"
+                                                        type="object"
+                                                        string="Replace &amp; Modify"
+                                                        class="btn-link"/>
+                                                <field name="line_update_state"
+                                                       widget="badge"
+                                                       decoration-success="line_update_state == 'from_pipeline'"
+                                                       decoration-warning="line_update_state == 'replaced'"
+                                                       decoration-info="line_update_state == 'added_sale_order'"
+                                                       readonly="1"/>
+                                            </list>
+                                        </field>
+
+                                        <h3>Service Totals</h3>
+                                        <div class="o_form_label o_td_label"
+                                             style="padding:12px; border:1px solid #d9d9d9; border-radius:6px; margin-bottom:15px; background:#fafafa;">
+                                            <group col="3">
+                                                <field name="total_service_cost" readonly="1"/>
+                                                <field name="total_service_unit_price" readonly="1"/>
+                                                <field name="total_service_sale" readonly="1"/>
+                                            </group>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                            </field>
+
+                        </div>
+
+                    </page>
+
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

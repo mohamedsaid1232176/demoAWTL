@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<record id="view_broker_entity_list" model="ir.ui.view">
+    <field name="name">broker.entity.list</field>
+    <field name="model">broker.entity</field>
+    <field name="arch" type="xml">
+        <list string="Broker Entities">
+            <field name="brokerage_entity_name"/>
+            <field name="brokerage_entity_address"/>
+            <field name="landline_number"/>
+            <field name="fax_number"/>
+            <field name="broker_name"/>
+            <field name="nationality"/>
+            <field name="broker_name"/>            
+
+        </list>
+    </field>
+</record>
+
+<record id="view_broker_entity_form" model="ir.ui.view">
+    <field name="name">broker.entity.form</field>
+    <field name="model">broker.entity</field>
+    <field name="arch" type="xml">
+
+        <form string="Broker Entity">
+
+            <sheet>
+
+                <group string="Brokerage Entity Info">
+                    <group>
+                        <field name="brokerage_entity_name"/>
+                        <field name="brokerage_entity_address"/>
+                    </group>
+
+                    <group>
+                        <field name="landline_number"/>
+                        <field name="fax_number"/>
+                    </group>
+                </group>
+
+                <group string="Broker Info">
+                    <group>
+                        <field name="broker_name"/>
+                        <field name="nationality"/>
+                    </group>
+
+                    <group>
+                        <field name="id_type_id"/>
+                        <field name="id_number"/>
+                    </group>
+                </group>
+
+                <group string="Contact Details">
+                    <group>
+                        <field name="mobile_number"/>
+                        <field name="email_address"/>
+                    </group>
+                </group>
+
+                <group string="Identity Attachment">
+                    <field name="id_number_attachment" class="oe_avatar"/>
+                </group>
+
+            </sheet>
+
+        </form>
+
+    </field>
+</record>
+
+<record id="action_broker_entity" model="ir.actions.act_window">
+    <field name="name">Broker Entities</field>
+    <field name="res_model">broker.entity</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Define different broker entities for your subscriptions.
+        </p>
+    </field>
+</record>
+
+<menuitem id="menu_broker_entity"
+ name="Broker Entities"
+ parent="sale_subscription.menu_sale_subscription"
+ action="action_broker_entity"/>
+
+
+    
+
+</odoo>

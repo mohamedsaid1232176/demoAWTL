@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_users_form_inherit_project_button" model="ir.ui.view">
+        <field name="name">res.users.form.project.button</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Project Settings">
+                    <group string="CRM Stage Buttons" col="2">
+                        <group>
+                            <field name="show_project_button"/>
+                            <field name="show_move_to_designer"/>
+                            <field name="show_move_to_proposition"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_multi_product_wizard_form" model="ir.ui.view">
+        <field name="name">multi.product.wizard.form</field>
+        <field name="model">multi.product.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Multi Product Wizard">
+                <group>
+                    <field name="product_ids">
+                        <list editable="bottom" class="o_list_view o_list_compact">
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="total_value"/>
+                        </list>
+                    </field>
+                </group>
+
+
+                <footer>
+                    <button string="Confirm"
+                            type="object"
+                            name="action_confirm"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_multi_product_wizard" model="ir.actions.act_window">
+        <field name="name">Multi Product Wizard</field>
+        <field name="res_model">multi.product.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

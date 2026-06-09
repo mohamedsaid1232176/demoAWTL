@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_project_management_app" model="res.groups">
+        <field name="name">Show Projects Management App</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vehicledata,access_vehicledata,model_vehicledata,base.group_user,1,1,1,1
+access_device_type,access_device_type,model_device_type,base.group_user,1,1,1,1
+access_installation_type,access_installation_type,model_installation_type,base.group_user,1,1,1,1
+access_vehicle_type,access_vehicle_type,model_vehicle_type,base.group_user,1,1,1,1

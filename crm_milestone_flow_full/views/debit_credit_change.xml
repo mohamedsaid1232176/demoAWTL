@@ -1,0 +1,210 @@
+<odoo>
+
+    <!-- ================================================= -->
+    <!-- MILESTONE ACCOUNTING -->
+    <!-- ================================================= -->
+
+    <record id="action_milestone_account_config" model="ir.actions.act_window">
+        <field name="name">Milestone Accounts</field>
+        <field name="res_model">milestone.account.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_milestone_account_root"
+              name="Milestone PO Accounting"
+              parent="crm.crm_menu_config"
+              sequence="60"/>
+
+    <menuitem id="menu_milestone_account_config"
+              name="PO Configuration"
+              parent="menu_milestone_account_root"
+              action="action_milestone_account_config"/>
+
+    <record id="view_milestone_account_config_form" model="ir.ui.view">
+        <field name="name">milestone.account.config.form</field>
+        <field name="model">milestone.account.config</field>
+        <field name="arch" type="xml">
+
+            <form string="Milestone Accounting Configuration">
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+
+                    <group string="Milestone Type">
+                        <field name="po_type" widget="radio"/>
+                    </group>
+
+                    <group string="Journal Entry Accounts" col="3">
+
+                        <group>
+                            <field name="debit_account_id"/>
+                        </group>
+
+                        <group>
+                            <field name="credit_account_id"/>
+                        </group>
+
+                        <group>
+                            <field name="vendor_bill_account_id"/>
+                        </group>
+
+                    </group>
+
+                </sheet>
+
+            </form>
+
+        </field>
+    </record>
+
+
+    <!-- ================================================= -->
+    <!-- INTERNAL TRANSFER -->
+    <!-- ================================================= -->
+
+    <record id="action_internal_transfer_accounts" model="ir.actions.act_window">
+        <field name="name">Internal Transfer Accounts</field>
+        <field name="res_model">milestone.internal.transfer.account</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_internal_transfer_accounts"
+              name="Internal Transfer Accounts"
+              parent="menu_milestone_account_root"
+              action="action_internal_transfer_accounts"
+              sequence="2"/>
+
+    <record id="view_internal_transfer_account_form" model="ir.ui.view">
+        <field name="name">internal.transfer.account.form</field>
+        <field name="model">milestone.internal.transfer.account</field>
+        <field name="arch" type="xml">
+
+            <form string="Internal Transfer Accounting Setup" create="0">
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group string="Internal Transfer Journal Entry" col="2">
+
+                        <group>
+                            <field name="debit_account_id"/>
+                        </group>
+
+                        <group>
+                            <field name="credit_account_id"/>
+                        </group>
+
+                    </group>
+
+                </sheet>
+
+            </form>
+
+        </field>
+    </record>
+
+
+    <!-- ================================================= -->
+    <!-- JOB ORDER ACCOUNTING -->
+    <!-- ================================================= -->
+
+    <record id="action_job_order_account_config" model="ir.actions.act_window">
+        <field name="name">Job Order Accounts</field>
+        <field name="res_model">job.order.account.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_job_order_account_root"
+              name="Job Order Accounting"
+              parent="crm.crm_menu_config"
+              sequence="70"/>
+
+    <menuitem id="menu_job_order_account_config"
+              name="Job Order Configuration"
+              parent="menu_job_order_account_root"
+              action="action_job_order_account_config"/>
+
+<record id="view_job_order_account_config_form" model="ir.ui.view">
+    <field name="name">job.order.account.config.form</field>
+    <field name="model">job.order.account.config</field>
+    <field name="arch" type="xml">
+
+        <form string="Job Order Accounting Configuration">
+
+            <sheet>
+
+                <div class="oe_title">
+                    <h1>
+                        <field name="name" placeholder="Configuration Name"/>
+                    </h1>
+                </div>
+
+                <!-- Job Type -->
+
+                <group string="Job Order Type">
+                    <field name="job_type" widget="radio"/>
+                </group>
+
+
+                <!-- ============================= -->
+                <!-- MO Accounts -->
+                <!-- ============================= -->
+
+                <group string="Manufacturing Order Accounts" col="2"
+                       invisible="job_type == 'sub_with'">
+
+                    <group>
+                        <field name="mo_debit_account_id"
+                               invisible="job_type == 'sub_with'"/>
+                    </group>
+
+                    <group>
+                        <field name="mo_credit_account_id"
+                               invisible="job_type == 'sub_with'"/>
+                    </group>
+
+                </group>
+
+
+                <!-- ============================= -->
+                <!-- PO Accounts -->
+                <!-- ============================= -->
+
+                <group string="Purchase Order Accounts" col="3"
+                       invisible="job_type == 'internal'">
+
+                    <group>
+                        <field name="po_debit_account_id"
+                               invisible="job_type == 'internal'"/>
+                    </group>
+
+                    <group>
+                        <field name="po_credit_account_id"
+                               invisible="job_type == 'internal'"/>
+                    </group>
+
+                    <group>
+                        <field name="vendor_bill_account_id"
+                               invisible="job_type == 'internal'"/>
+                    </group>
+
+                </group>
+
+            </sheet>
+
+        </form>
+
+    </field>
+</record>
+
+</odoo>

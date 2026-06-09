@@ -1,0 +1,50 @@
+<odoo>
+    <record id="view_crm_stage_wizard_form" model="ir.ui.view">
+        <field name="name">crm.stage.wizard.form</field>
+        <field name="model">crm.stage.wizard</field>
+        <field name="arch" type="xml">
+
+            <form string="Assign Users" class="ultra_wizard">
+
+                <div class="uw_container">
+
+                    <!-- 🔥 Header -->
+                    <div class="uw_header">
+                        <div class="uw_icon">🚀</div>
+                        <div class="uw_text">
+                            <h1>Assign Responsible Team</h1>
+                            <p>Select who will take ownership of this stage</p>
+                        </div>
+                    </div>
+
+                    <!-- 🔥 Divider -->
+                    <div class="uw_divider"/>
+
+                    <!-- 🔥 Users -->
+                    <div class="uw_field_block">
+                        <div class="o_form_label">Team Members</div>
+                        <field name="user_ids"
+                               widget="many2many_tags"
+                               class="uw_users"/>
+                    </div>
+                    <!-- 🔥 Footer -->
+                    <footer class="uw_footer">
+
+                        <button name="action_confirm"
+                                type="object"
+                                string="🚀 Assign And Continue"
+                                class="uw_btn_primary"/>
+
+                        <button string="Cancel"
+                                special="cancel"
+                                class="uw_btn_secondary"/>
+
+                    </footer>
+
+                </div>
+
+            </form>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,16 @@
+<odoo>
+    <record id="view_users_form_inherit_milestone_quotation_permissions" model="ir.ui.view">
+        <field name="name">res.users.form.milestone.quotation.permissions</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="crm_proposition_button.view_users_form_inherit_project_button"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='show_project_button']/ancestor::page[1]" position="inside">
+                <group string="Quotation Access" col="2">
+                    <group>
+                        <field name="allow_multiple_milestone_quotations"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

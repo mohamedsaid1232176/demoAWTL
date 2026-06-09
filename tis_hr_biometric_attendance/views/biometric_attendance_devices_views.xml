@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+<!--    device users list view  -->
+     <record id="biometric_device_users_list" model="ir.ui.view">
+        <field name="name">biometric.device.users.list</field>
+        <field name="model">biometric.attendance.devices</field>
+        <field name="arch" type="xml">
+            <list string="Biometric Device Users">
+                <field name="device_user_name" string="Device User Name"/>
+                <field name="employee_id" string="Employee ID"/>
+                <field name="biometric_attendance_id" string="Biometric User ID"/>
+                <field name="device_id" string="Device ID"/>
+            </list>
+        </field>
+     </record>
+<!--    search view -->
+     <record id="biometric_attendance_devices_filter" model="ir.ui.view">
+        <field name="name">biometric.attendance.devices.filter</field>
+        <field name="model">biometric.attendance.devices</field>
+        <field name="arch" type="xml">
+            <search string="Device Users Search">
+                <field name="device_user_name"/>
+                <field name="employee_id"/>
+                <field name="biometric_attendance_id"/>
+                <field name="device_id"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="device" string="Biometric Device" context="{'group_by':'device_id'}"/>
+                </group>
+            </search>
+        </field>
+     </record>
+
+    <!--    device users form view  -->
+     <record id="biometric_device_users_form" model="ir.ui.view">
+        <field name="name">biometric.device.users.form</field>
+        <field name="model">biometric.attendance.devices</field>
+        <field name="arch" type="xml">
+            <form string="Biometric Device Users">
+                <header>
+                     <button name="enroll_finger_print" type="object"
+                            class="oe_highlight"
+							string="Enroll Finger Print"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_user_commands"
+                                type="object"
+                                icon="fa-terminal"
+                                string="Command To Device"
+                                class="oe_stat_button">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_text">User Commands
+                                </span>
+                                <span class="o_stat_value">
+                                    <field name="command_count" readonly="1"/>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="device_user_name" string="Device User Name"/>
+                        <field name="employee_id" string="Employee ID"/>
+                        <field name="biometric_attendance_id" string="Biometric User ID"/>
+                        <field name="device_id" string="Device ID"/>
+                    </group>
+                     <notebook>
+                        <page name="device_user_fingerprint" string="Finger Print">
+                            <group>
+                                <field name="finger_template_ids" nolabel="1" >
+                                    <list create="false" delete="false">
+                                        <field name="f_id"/>
+                                        <field name="template_data"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+     </record>
+
+<!--    view action -->
+    <record id="action_biometric_device_users_view" model="ir.actions.act_window">
+        <field name="name">Biometric Device Users</field>
+        <field name="res_model">biometric.attendance.devices</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="biometric_attendance_devices_filter"/>
+        <field name="context">{'search_default_device': 1}</field>
+    </record>
+
+<!-- menuitem -->
+    <menuitem id="menu_device_users" name="Device Users"
+              parent="tis_hr_biometric_attendance.menu_biometric_device_config"
+              action="action_biometric_device_users_view" sequence="30"/>
+</odoo>

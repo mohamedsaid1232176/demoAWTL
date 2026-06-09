@@ -1,0 +1,40 @@
+<odoo>
+
+
+    <record id="view_order_form_inherit_pipeline" model="ir.ui.view">
+        <field name="name">sale.order.form.pipeline.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- نضيفه تحت customer أو أي مكان واضح -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="opportunity_id" readonly="1" string="Pipeline"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="view_sale_order_filter_inherit_pipeline" model="ir.ui.view">
+        <field name="name">sale.order.search.pipeline.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة حقل للبحث -->
+            <xpath expr="//search" position="inside">
+                <field name="opportunity_id" string="Pipeline"/>
+            </xpath>
+
+            <!-- إضافة Filter جاهز -->
+            <xpath expr="//search" position="inside">
+                <filter string="Has Pipeline" name="has_pipeline"
+                        domain="[('opportunity_id', '!=', False)]"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

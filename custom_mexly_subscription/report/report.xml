@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="action_report_saleorder_custom" model="ir.actions.report">
+        <field name="name">طباعة العقد</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="domain" eval="[('is_subscription', '=', True)]"/>
+        <field name="report_name">custom_mexly_subscription.sale_order_custom_template</field>
+        <field name="report_file">custom_mexly_subscription.sale_order_custom_template</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'%s - عقد إيجار' % (object.name)</field>
+
+    </record>
+
+    <template id="custom_contract_header">
+            <div class="my_custom_header" style="padding: 15px 0;">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                <div style="text-align: left; flex-shrink: 0;">
+                    <img t-if="company and company.logo" 
+                         t-att-src="image_data_uri(company.logo)"
+                         style="max-height: 90px; max-width: 200px;" 
+                         alt="Company Logo"/>
+                </div>
+
+                <div style="text-align: right; margin-left: auto;">
+                    <h2 style="color:#1b5e57; margin:0; font-size:24px; padding-right:24px;">عقد إيجار</h2>
+                    <h3 style="color:#c9a646; margin:0; font-size: 19px;">TENANCY CONTRACT</h3>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; text-align: center; font-size: 13.5px; line-height: 1.5; color: #e51313;">
+                <strong>
+                    يعتبر هذا العقد موقعاً وسنداً<br/>
+                    تنفيذياً بموجب قرار مجلس الوزراء رقم (١٣١) وتاريخ ١٤٢٠/٤/٣ هـ
+                </strong>
+            </div>
+        </div>
+    </template>
+
+
+    <template id="sale_order_custom_template">
+        <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+        <t t-call="web.external_layout">
+        <style>
+            .header {
+                display: none !important;
+            }
+        </style>
+        
+        <t t-call="custom_mexly_subscription.custom_contract_header">
+            <t t-set="company" t-value="o.company_id"/>
+        </t>
+
+        <div class="page">
+
+            <style>
+                .contract-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 13px;
+                }
+                .contract-table td {
+                    border: 1px solid #ddd;
+                    padding: 6px;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+                .label {
+                    color: #555;
+                    width: 12%;
+                }
+                .value {
+                    font-weight: bold;
+                    width: 21%;
+                }
+                .text-right {
+                    text-align: right;
+                }
+                .section-title {
+                    background:#1b5e57;
+                    color:white;
+                    padding:6px;
+                    font-weight:bold;
+                    margin-top:10px;
+                    text-align: center;
+                }
+                .gray {
+                    background:#f2f2f2;
+                }
+            </style>
+
+
+        <!-- ================= Contract Data ================= -->
+        <div class="section-title">Contract Data | بيانات العقد</div>
+        <table class="contract-table">
+
+        <tr>
+            <td class="label">Main Contract No.</td>
+            <td class="value"><span t-field="o.main_contract_number"/></td>
+            <td class="label text-right">رقم العقد الأساسي</td>
+
+            <td class="label">Contract No.</td>
+            <td class="value"><span t-field="o.contract_number"/></td>
+            <td class="label text-right">رقم العقد</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">Contract Type</td>
+            <td class="value"><span t-field="o.contract_type.name"/></td>
+            <td class="label text-right">نوع العقد</td>
+
+            <td class="label">Contract Sealing Date</td>
+            <td class="value"><span t-field="o.contract_sealing_date"/></td>
+            <td class="label text-right">تاريخ ابرام العقد</td>
+        </tr>
+
+        <tr>
+            <td class="label">Contract Location</td>
+            <td class="value"><span t-field="o.contract_sealing_city.name"/></td>
+            <td class="label text-right">مكان ابرام العقد</td>
+
+            <td class="label">Start Date</td>
+            <td class="value"><span t-field="o.start_date"/></td>
+            <td class="label text-right">تاريخ بداية الإيجار</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">End Date</td>
+            <td class="value"><span t-field="o.end_date"/></td>
+            <td class="label text-right">تاريخ نهاية الإيجار</td>
+
+            <td></td><td></td><td></td>
+        </tr>
+
+        </table>
+
+        <!-- ================= Lessor Data ================= -->
+        <div class="section-title">Lessor Data | بيانات المؤجر</div>
+        <table class="contract-table">
+
+        <tr>
+            <td class="label">Organization Type</td>
+            <td class="value"><span t-field="o.organization_type.name"/></td>
+            <td class="label text-right">نوع المنظمة</td>
+
+            <td class="label">Company</td>
+            <td class="value"><span t-field="o.company_id.name"/></td>
+            <td class="label text-right">اسم الشركة</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">CR No.</td>
+            <td class="value">---</td>
+            <td class="label text-right">رقم السجل</td>
+
+            <td class="label">Issued By</td>
+            <td class="value"><span t-field="o.issued_by"/></td>
+            <td class="label text-right">جهة الإصدار</td>
+        </tr>
+
+        <tr>
+            <td class="label">Unified Number</td>
+            <td class="value"><span t-field="o.unified_number"/></td>
+            <td class="label text-right">الرقم الموحد</td>
+
+            <td class="label">CR Date</td>
+            <td class="value"><span t-field="o.cr_date"/></td>
+            <td class="label text-right">تاريخ السجل</td>
+        </tr>
+
+        </table>
+
+        <!-- ================= Representative ================= -->
+        <div class="section-title">Lessor Representative | بيانات ممثل المؤجر</div>
+        <table class="contract-table">
+
+        <tr>
+            <td class="label">Name</td>
+            <td class="value"><span t-field="o.lessor_representative_id.name"/></td>
+            <td class="label text-right">الاسم</td>
+
+            <td class="label">Nationality</td>
+            <td class="value"><span t-field="o.nationality"/></td>
+            <td class="label text-right">الجنسية</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">ID Type</td>
+            <td class="value"><span t-field="o.nationality_type_id.name"/></td>
+            <td class="label text-right">نوع الهوية</td>
+
+            <td class="label">ID Number</td>
+            <td class="value"><span t-field="o.id_number"/></td>
+            <td class="label text-right">رقم الهوية</td>
+        </tr>
+
+        <tr>
+            <td class="label">Mobile</td>
+            <td class="value"><span t-field="o.mobile_number"/></td>
+            <td class="label text-right">رقم الجوال</td>
+
+            <td class="label">Email</td>
+            <td class="value"><span t-field="o.email_address"/></td>
+            <td class="label text-right">البريد الإلكتروني</td>
+        </tr>
+
+        </table>
+
+        <!-- ================= Tenant ================= -->
+        <div class="section-title">Tenant Data | بيانات المستأجر</div>
+        <table class="contract-table">
+
+        <tr>
+            <td class="label">Name</td>
+            <td class="value"><span t-field="o.tenancy_customer_id.name"/></td>
+            <td class="label text-right">الاسم</td>
+
+            <td class="label">Nationality</td>
+            <td class="value"><span t-esc="o.tenancy_nationality"/></td>
+            <td class="label text-right">الجنسية</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">ID Type</td>
+            <td class="value"><span t-field="o.tenancy_id_type_id.name"/></td>
+            <td class="label text-right">نوع الهوية</td>
+
+            <td class="label">ID Number</td>
+            <td class="value"><span t-esc="o.tenancy_id_number"/></td>
+            <td class="label text-right">رقم الهوية</td>
+        </tr>
+
+        <tr>
+            <td class="label">Mobile</td>
+            <td class="value"><span t-esc="o.tenancy_mobile_number"/></td>
+            <td class="label text-right">رقم الجوال</td>
+
+            <td class="label">Email</td>
+            <td class="value"><span t-esc="o.tenancy_email_address"/></td>
+            <td class="label text-right">البريد الإلكتروني</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">ID Attachment</td>
+            <td class="value">
+                <t t-if="o.tenancy_id_number_attachment">
+                    <img t-att-src="'data:image/png;base64,%s' % o.tenancy_id_number_attachment"
+                        style="max-height:80px;"/>
+                </t>
+            </td>
+            <td class="label text-right">صورة الهوية</td>
+
+            <td></td><td></td><td></td>
+        </tr>
+
+        </table>
+        
+        <!-- ================= Tenant ================= -->
+        <div class="section-title">Tenant Representative Data | بيانات ممثل المستأجر</div>
+        
+        <table class="contract-table">
+
+            <tr>
+                <td class="label">The tenant is represented by himself or herself.</td>
+                <td class="label text-right">الممثل مستأجر بنفسه</td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================= Brokerage Entity and Broker Data ================= -->
+        <div class="section-title">Brokerage Entity and Broker Data | بيانات منشأة الوساطة العقارية والموظف</div>
+
+        <table class="contract-table">
+
+        <tr>
+            <td class="label">Entity Name</td>
+            <td class="value"><span t-esc="o.brokerage_entity_name"/></td>
+            <td class="label text-right">اسم منشأة الوساطة</td>
+
+            <td class="label">CR Number</td>
+            <td class="value"><span t-esc="o.cr_entity_no"/></td>
+            <td class="label text-right">رقم السجل التجاري</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">Address</td>
+            <td class="value"><span t-esc="o.brokerage_entity_address"/></td>
+            <td class="label text-right">العنوان</td>
+
+            <td class="label">Landline</td>
+            <td class="value"><span t-esc="o.landline_number"/></td>
+            <td class="label text-right">رقم الهاتف</td>
+        </tr>
+
+        <tr>
+            <td class="label">Fax</td>
+            <td class="value"><span t-esc="o.fax_number"/></td>
+            <td class="label text-right">رقم الفاكس</td>
+
+            <td></td><td></td><td></td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">Broker Name</td>
+            <td class="value"><span t-esc="o.broker_name"/></td>
+            <td class="label text-right">اسم الموظف</td>
+
+            <td class="label">Nationality</td>
+            <td class="value"><span t-esc="o.broker_nationality"/></td>
+            <td class="label text-right">الجنسية</td>
+        </tr>
+
+        <tr>
+            <td class="label">ID Type</td>
+            <td class="value"><span t-field="o.broker_id_type_id.name"/></td>
+            <td class="label text-right">نوع الهوية</td>
+
+            <td class="label">ID Number</td>
+            <td class="value"><span t-esc="o.broker_id_number"/></td>
+            <td class="label text-right">رقم الهوية</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">Mobile</td>
+            <td class="value"><span t-esc="o.broker_mobile_number"/></td>
+            <td class="label text-right">رقم الجوال</td>
+
+            <td class="label">Email</td>
+            <td class="value"><span t-esc="o.broker_email_address"/></td>
+            <td class="label text-right">البريد الإلكتروني</td>
+        </tr>
+
+        </table>
+
+        <!-- ================= Ownership document Data  ================= -->
+        <div class="section-title">Ownership document Data  | بيانات مستندات الملكية</div>
+        
+        <table class="contract-table">
+
+        <tr>
+            <td class="label">Title Deed No</td>
+            <td class="value"><span t-field="o.title_deed_no"/></td>
+            <td class="label text-right">رقم المستند</td>
+
+            <td class="label">Issuer</td>
+            <td class="value"><span t-esc="o.issuer"/></td>
+            <td class="label text-right">جهة الإصدار</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">Issue Date</td>
+            <td class="value"><span t-field="o.issue_date"/></td>
+            <td class="label text-right">تاريخ الإصدار</td>
+
+            <td class="label">Place of Issue</td>
+            <td class="value"><span t-esc="o.place_of_issue"/></td>
+            <td class="label text-right">مكان الإصدار</td>
+        </tr>
+
+        <tr class="gray">
+            <td class="label">Title Deed Type</td>
+            <td class="value"><span t-field="o.title_deed_type.name"/></td>
+            <td class="label text-right">نوع الصك</td>
+
+            <td></td><td></td><td></td>
+        </tr>
+
+        </table>
+
+        <!-- ================= Property Data ================= -->
+        <div class="section-title">Property Data | بيانات العقار</div>
+
+        <table class="contract-table">
+
+            <tr>
+                <td class="label">National Address</td>
+                <td class="value"><span t-field="o.national_address"/></td>
+                <td class="label text-right">العنوان الوطني</td>
+
+                <td class="label">Property Usage</td>
+                <td class="value"><span t-field="o.property_usage"/></td>
+                <td class="label text-right">الغرض من الاستخدام</td>
+            </tr>
+
+            <tr class="gray">
+                <td class="label">Property Type</td>
+                <td class="value"><span t-field="o.property_type.name"/></td>
+                <td class="label text-right">نوع العقار</td>
+
+                <td class="label">Floor No.</td>
+                <td class="value"><span t-field="o.floor_no"/></td>
+                <td class="label text-right">عدد الطوابق</td>
+            </tr>
+
+            <tr>
+                <td class="label">Units No.</td>
+                <td class="value"><span t-field="o.units_no"/></td>
+                <td class="label text-right">عدد الوحدات</td>
+
+                <td class="label">Elevators No.</td>
+                <td class="value"><span t-field="o.elevators_no"/></td>
+                <td class="label text-right">عدد المصاعد</td>
+            </tr>
+
+            <tr class="gray">
+                <td class="label">Parking Lots</td>
+                <td class="value"><span t-field="o.parking_lots"/></td>
+                <td class="label text-right">عدد المواقف</td>
+
+                <td class="label">Location Description</td>
+                <td class="value"><span t-field="o.location_description"/></td>
+                <td class="label text-right">وصف الموقع</td>
+            </tr>
+
+        </table>
+        <!-- ================= Unit Details ================= -->
+        <div class="section-title">Unit Details | بيانات الوحدة</div>
+
+        <table class="contract-table">
+
+            <tr>
+                <td class="label">Unit Type</td>
+                <td class="value"><span t-field="o.unit_type"/></td>
+                <td class="label text-right">نوع الوحدة</td>
+
+                <td class="label">Floor Number</td>
+                <td class="value"><span t-field="o.floor_number"/></td>
+                <td class="label text-right">رقم الطابق</td>
+            </tr>
+
+            <tr class="gray">
+                <td class="label">Room Type</td>
+                <td class="value"><span t-field="o.room_type"/></td>
+                <td class="label text-right">نوع الغرفة</td>
+
+                <td class="label">Unit Area</td>
+                <td class="value"><span t-field="o.unit_area"/></td>
+                <td class="label text-right">مساحة الوحدة</td>
+            </tr>
+
+            <tr>
+                <td class="label">Furnished</td>
+                <td class="value"><span t-field="o.furnished"/></td>
+                <td class="label text-right">مؤثثة</td>
+
+                <td class="label">Furnishing Status</td>
+                <td class="value"><span t-field="o.furnishing_status"/></td>
+                <td class="label text-right">حالة التأثيث</td>
+            </tr>
+
+            <tr class="gray">
+                <td class="label">Kitchen Cabinets</td>
+                <td class="value"><span t-field="o.kitchen_cabinets"/></td>
+                <td class="label text-right">خزائن المطبخ</td>
+
+                <td class="label">AC Units</td>
+                <td class="value"><span t-field="o.ac_units"/></td>
+                <td class="label text-right">عدد وحدات التكييف</td>
+            </tr>
+
+            <tr>
+                <td class="label">Electricity Meter</td>
+                <td class="value"><span t-field="o.electricity_meter_number"/></td>
+                <td class="label text-right">عداد الكهرباء</td>
+
+                <td class="label">Electricity Reading</td>
+                <td class="value"><span t-field="o.current_meter_read_electricity"/></td>
+                <td class="label text-right">قراءة الكهرباء</td>
+            </tr>
+
+            <tr class="gray">
+                <td class="label">Water Meter</td>
+                <td class="value"><span t-field="o.water_meter_number"/></td>
+                <td class="label text-right">عداد المياه</td>
+
+                <td class="label">Water Reading</td>
+                <td class="value"><span t-field="o.current_meter_read_water"/></td>
+                <td class="label text-right">قراءة المياه</td>
+            </tr>
+
+            <tr>
+                <td class="label">Gas Meter</td>
+                <td class="value"><span t-field="o.gas_meter_number"/></td>
+                <td class="label text-right">عداد الغاز</td>
+
+                <td class="label">Gas Reading</td>
+                <td class="value"><span t-field="o.current_meter_read_gas"/></td>
+                <td class="label text-right">قراءة الغاز</td>
+            </tr>
+
+        </table>
+
+        <!-- ================= Tenant Authority  ================= -->
+        <div class="section-title">Tenant Authority  | صلاحيات المستأجر</div>
+
+        <table class="contract-table">
+
+        </table>
+
+        </div>
+
+        </t>
+        </t>
+        </t>
+    </template>
+</odoo>

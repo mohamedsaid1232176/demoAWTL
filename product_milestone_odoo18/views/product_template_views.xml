@@ -1,0 +1,26 @@
+<odoo>
+    <record id="view_product_template_form_inherit_milestone" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.milestone</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='type']" position="after">
+                <group>
+                    <field name="milestone_ids"
+                           widget="many2many_tags"
+                           options="{'color_field': 'color'}"
+                           domain="[('is_milestone_flag','=',True)]"
+                           invisible="not show_milestone_field or is_milestone_flag"/>
+                </group>
+
+                <group>
+                    <field name="is_milestone_flag"
+                           string="Is Milestone"
+                           invisible="not show_milestone_field"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

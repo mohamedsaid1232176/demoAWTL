@@ -1,0 +1,70 @@
+<odoo>
+
+    <record id="view_project_summary_tree" model="ir.ui.view">
+        <field name="name">project.summary.tree</field>
+        <field name="model">project.summary</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="project_id"/>
+                <field name="total_project_cost"/>
+                <field name="total_unit_price_project"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_project_summary_form" model="ir.ui.view">
+        <field name="name">project.summary.form</field>
+        <field name="model">project.summary</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <field name="project_id"/>
+                        <field name="total_project_cost" readonly="1"/>
+                        <field name="total_unit_price_project" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+  <record id="view_project_summary_kanban" model="ir.ui.view">
+    <field name="name">project.summary.kanban</field>
+    <field name="model">project.summary</field>
+    <field name="arch" type="xml">
+        <kanban>
+            <field name="project_name"/>
+            <field name="total_project_cost"/>
+            <field name="total_unit_price_project"/>
+
+            <templates>
+                <t t-name="kanban-box">
+                    <div class="oe_kanban_global_click">
+
+                        <div class="o_kanban_record_title">
+                            <strong>
+                                <t t-esc="record.project_name.raw_value"/>
+                            </strong>
+                        </div>
+
+                        <div>
+                            <strong>Total Cost:</strong>
+                            <t t-esc="record.total_project_cost.raw_value"/>
+                        </div>
+
+                        <div>
+                            <strong>Unit Price:</strong>
+                            <t t-esc="record.total_unit_price_project.raw_value"/>
+                        </div>
+
+                    </div>
+                </t>
+            </templates>
+
+        </kanban>
+    </field>
+</record>
+
+
+
+</odoo>
