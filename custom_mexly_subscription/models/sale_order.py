@@ -300,6 +300,10 @@ class SaleOrder(models.Model):
 
         invoices = []
         current_start_date = self.start_date
+        invoice_currency = self.currency_id or self.company_id.currency_id
+
+        if not invoice_currency:
+            raise UserError("Please set a currency on the sale order or company before generating invoices.")
 
         unit = self.plan_id.billing_period_unit
         value = self.plan_id.billing_period_value
@@ -345,6 +349,8 @@ class SaleOrder(models.Model):
             move = self.env['account.move'].create({
                 'move_type': 'out_invoice',
                 'partner_id': self.partner_id.id,
+                'company_id': self.company_id.id,
+                'currency_id': invoice_currency.id,
                 'invoice_origin': self.name,
                 'invoice_user_id': self.user_id.id,
                 'invoice_date': current_start_date,
